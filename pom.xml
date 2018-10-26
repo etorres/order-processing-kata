@@ -22,7 +22,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+
 		<spring-cloud.version>Finchley.SR2</spring-cloud.version>
+
+        <!-- Use failsafe and surefire plugin versions with native support fot JUnit 5 -->
+        <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -77,8 +82,19 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
