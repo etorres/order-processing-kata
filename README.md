@@ -2,5 +2,5 @@
 
 
 ```text
-mvn clean test
+mvn clean test -P all-tests
 ```
