@@ -1,11 +1,14 @@
 spring:
   application.name: order-processing
   profiles.active: test
+spring.security.user:
+  name: admin
+  password: s3C4E7
 management:
   endpoints.web:
-    base-path: /
+    base-path: /management
     exposure.include: health,info,metrics,mappings
-  endpoint.health.show-details: when-authorized
+  endpoint.health.show-details: WHEN_AUTHORIZED
 ---
 spring:
   profiles: test

@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExampleServiceTest {
+class ExampleUnitTest {
 
     @Test
-    @DisplayName("Example Service should work!")
+    @DisplayName("Example Unit Test should work!")
     void exampleServiceShouldWork() {
         System.err.println("\n\n >> HERE IS OK!\n");
         assertTrue(true);

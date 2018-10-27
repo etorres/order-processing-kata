@@ -1,8 +1,11 @@
 package es.eriktorr.katas.orders;
 
+import lombok.Value;
+
 import java.util.UUID;
 
-class Order {
+@Value
+public class Order {
 
     UUID uuid;
 
