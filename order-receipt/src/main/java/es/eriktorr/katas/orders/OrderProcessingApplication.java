@@ -1,6 +1,6 @@
 package es.eriktorr.katas.orders;
 
-import es.eriktorr.katas.orders.spring.configuration.WebSecurityConfiguration;
+import es.eriktorr.katas.orders.configuration.WebSecurityConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;

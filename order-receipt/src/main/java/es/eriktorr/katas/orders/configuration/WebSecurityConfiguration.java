@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders.spring.configuration;
+package es.eriktorr.katas.orders.configuration;
 
 import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;

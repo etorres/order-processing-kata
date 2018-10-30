@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders;
+package es.eriktorr.katas.orders.domain.model;
 
 import lombok.Value;
 

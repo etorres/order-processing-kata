@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders.spring.configuration;
+package es.eriktorr.katas.orders.configuration;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;

@@ -1,6 +1,6 @@
-package es.eriktorr.katas.orders.spring.configuration;
+package es.eriktorr.katas.orders.configuration;
 
-import es.eriktorr.katas.orders.Order;
+import es.eriktorr.katas.orders.domain.model.Order;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;

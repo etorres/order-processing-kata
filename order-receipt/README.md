@@ -2,10 +2,12 @@
 
 
 ```text
-mvn clean test -P all-tests
+gradle test integrationTest
 ```
 
 https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-security.html#boot-features-security-webflux
+
+https://docs.spring.io/spring/docs/current/spring-framework-reference/integration.html#jms
 
 
 ## Test Reports
