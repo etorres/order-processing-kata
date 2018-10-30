@@ -1,6 +1,6 @@
 package es.eriktorr.katas.orders.configuration;
 
-import es.eriktorr.katas.orders.domain.service.OrderReceiver;
+import es.eriktorr.katas.orders.domain.service.OrderReceiver2;
 import lombok.val;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -39,8 +39,8 @@ public class JmsConfiguration {
     }
 
     @Bean
-    OrderReceiver orderReceiver() {
-        return new OrderReceiver();
+    OrderReceiver2 orderReceiver() {
+        return new OrderReceiver2();
     }
 
 }

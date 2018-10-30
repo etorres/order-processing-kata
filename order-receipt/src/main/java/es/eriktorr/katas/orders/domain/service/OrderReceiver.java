@@ -1,17 +1,24 @@
 package es.eriktorr.katas.orders.domain.service;
 
 import es.eriktorr.katas.orders.domain.model.Order;
-import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
+import reactor.core.publisher.Mono;
 
 import static es.eriktorr.katas.orders.configuration.JmsConfiguration.ORDER_QUEUE;
 
 public class OrderReceiver {
 
-    @JmsListener(destination = ORDER_QUEUE, containerFactory = "jmsListenerContainerFactory")
-    public void process(Order order) {
-        // TODO
-        System.err.println("Received <" + order + ">");
-        // TODO
+    private final JmsTemplate jmsTemplate;
+
+    public OrderReceiver(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
+    }
+
+    public Mono<Order> save(Order order) {
+        return Mono.defer(() -> {
+            jmsTemplate.convertAndSend(ORDER_QUEUE, order);
+            return Mono.just(order);
+        });
     }
 
 }
