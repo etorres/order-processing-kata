@@ -5,6 +5,7 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java'
 	group = 'es.eriktorr.katas'
     version = '1.0.0'
     tasks.withType(JavaCompile) {
@@ -13,4 +14,10 @@ subprojects {
 		options.encoding = 'UTF-8'
         options.compilerArgs.addAll(['-parameters'])
 	}
+}
+
+project(':order-receipt') {
+    dependencies {
+        compile project(':common')
+    }
 }
