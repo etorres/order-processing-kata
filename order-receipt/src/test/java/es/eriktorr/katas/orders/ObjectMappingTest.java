@@ -18,13 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ObjectMappingTest {
 
-    private static final String ORDER_ID = "4472a477-931e-48b7-8bfb-95daa1ad0216";
+    private static final String ITEM_ID = "4472a477-931e-48b7-8bfb-95daa1ad0216";
 
     @Test
     @DisplayName("Serialize immutable object")
     void serializeImmutableObject() throws IOException {
-        val jsonPayload = "{\"uuid\":\"" + ORDER_ID + "\"}";
-        val immutableItem = new ImmutableItem(UUID.fromString(ORDER_ID));
+        val jsonPayload = "{\"uuid\":\"" + ITEM_ID + "\"}";
+        val immutableItem = new ImmutableItem(UUID.fromString(ITEM_ID));
 
         val jacksonObjectMapperBuilder = new Jackson2ObjectMapperBuilder();
         customJson().customize(jacksonObjectMapperBuilder);
