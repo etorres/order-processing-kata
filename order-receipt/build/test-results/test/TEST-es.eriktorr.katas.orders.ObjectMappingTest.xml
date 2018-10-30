@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="es.eriktorr.katas.orders.ObjectMappingTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-10-30T10:25:58" hostname="Eriks-MBP.home" time="0.314">
+  <properties/>
+  <testcase name="serializeImmutableObject()" classname="es.eriktorr.katas.orders.ObjectMappingTest" time="0.314"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
