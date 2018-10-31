@@ -1,0 +1,26 @@
+plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+    id 'java'
+}
+
+lombok {
+    version = "1.16.18"
+    sha256 = "9d957f572386b9e257093a45b148f9b411cff80d9efd55eaf6fca27002d2e4d9"
+}
+
+apply plugin: 'java'
+
+dependencies {
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'integration', 'regression'
+    }
+    testLogging {
+		events 'passed', 'skipped', 'failed'
+	}
+    failFast = true
+}

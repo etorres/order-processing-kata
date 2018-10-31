@@ -26,6 +26,7 @@ apply plugin: 'io.spring.dependency-management'
 
 ext {
 	springCloudVersion = 'Finchley.SR2'
+	problemVersion = '0.22.0'
 }
 
 dependencyManagement {
@@ -47,6 +48,10 @@ dependencies {
 	implementation('org.springframework.boot:spring-boot-starter-jdbc')
 	runtimeOnly('com.h2database:h2')
 	testImplementation('org.flywaydb:flyway-core')
+
+	implementation("org.zalando:jackson-datatype-problem:${problemVersion}") {
+		exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+	}
 	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'junit', module: 'junit'

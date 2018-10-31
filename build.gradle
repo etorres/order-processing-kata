@@ -21,3 +21,9 @@ project(':order-receipt') {
         compile project(':common')
     }
 }
+
+project(':order-placement') {
+    dependencies {
+        compile project(':common')
+    }
+}

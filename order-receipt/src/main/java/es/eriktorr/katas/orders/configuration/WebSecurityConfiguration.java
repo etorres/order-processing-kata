@@ -18,9 +18,8 @@ public class WebSecurityConfiguration {
                 .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .matchers(EndpointRequest.to(InfoEndpoint.class, HealthEndpoint.class)).permitAll()
                 .matchers(EndpointRequest.toAnyEndpoint()).hasAuthority("ACTUATOR")
-                .pathMatchers("/orders").permitAll()
+                .pathMatchers("/stores/**").permitAll()
                 .anyExchange().authenticated().and()
-                .formLogin().and()
                 .build();
     }
 
