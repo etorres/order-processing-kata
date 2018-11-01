@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
@@ -20,7 +21,7 @@ public class JmsConfiguration {
     public static final String ORDER_QUEUE = "order-queue";
 
     @Bean
-    JmsListenerContainerFactory<?> jmsListenerContainerFactory(
+    JmsListenerContainerFactory<DefaultMessageListenerContainer> jmsListenerContainerFactory(
             ConnectionFactory connectionFactory,
             DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer
     ) {
