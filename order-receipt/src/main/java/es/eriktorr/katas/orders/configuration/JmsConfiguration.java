@@ -1,6 +1,5 @@
 package es.eriktorr.katas.orders.configuration;
 
-import es.eriktorr.katas.orders.domain.service.OrderReceiver2;
 import lombok.val;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -36,11 +35,6 @@ public class JmsConfiguration {
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
         return converter;
-    }
-
-    @Bean
-    OrderReceiver2 orderReceiver() {
-        return new OrderReceiver2();
     }
 
 }

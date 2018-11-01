@@ -2,7 +2,6 @@ package es.eriktorr.katas.orders.configuration;
 
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
-import es.eriktorr.katas.orders.domain.service.OrderReceiver2;
 import es.eriktorr.katas.orders.infrastructure.web.OrderHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +18,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @Configuration
 class RoutingConfiguration {
-
-    @Bean
-    OrderReceiver2 orderReceiver2() {
-        return new OrderReceiver2();
-    }
 
     @Bean
     OrderIdGenerator orderIdGenerator() {

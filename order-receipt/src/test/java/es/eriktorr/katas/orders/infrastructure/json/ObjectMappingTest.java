@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders;
+package es.eriktorr.katas.orders.infrastructure.json;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
