@@ -18,16 +18,11 @@ public class OrderReceiver {
     }
 
     public Mono<Order> save(Order order) {
-        return Mono.defer(() -> {
-
-
-
-
-            // TODO
-
-            jmsTemplate.convertAndSend(ORDER_QUEUE, order);
-            return Mono.just(order);
-        });
+        return eventStoreRepository.create(order)
+                .map(it -> {
+                    jmsTemplate.convertAndSend(ORDER_QUEUE, it);
+                    return it;
+                });
     }
 
 }

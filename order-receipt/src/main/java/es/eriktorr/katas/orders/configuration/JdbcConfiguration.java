@@ -1,6 +1,8 @@
 package es.eriktorr.katas.orders.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
+import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -9,8 +11,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class JdbcConfiguration {
 
     @Bean
-    EventStoreRepository eventStoreRepository(JdbcTemplate jdbcTemplate) {
-        return new EventStoreRepository(jdbcTemplate);
+    OrderJsonMapper orderJsonMapper(ObjectMapper objectMapper) {
+        return new OrderJsonMapper(objectMapper);
+    }
+
+    @Bean
+    EventStoreRepository eventStoreRepository(JdbcTemplate jdbcTemplate, OrderJsonMapper orderJsonMapper) {
+        return new EventStoreRepository(jdbcTemplate, orderJsonMapper);
     }
 
 }

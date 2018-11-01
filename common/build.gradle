@@ -10,8 +10,14 @@ lombok {
 
 apply plugin: 'java'
 
+ext {
+    jacksonVersion = '2.9.7'
+}
+
 dependencies {
-	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 }
 
