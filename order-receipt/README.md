@@ -24,3 +24,7 @@ https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-connectin
 https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/connecting-to-amazon-mq.html
 
 https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-working-java-example.html
+
+## JaCoCo and SonarQube
+
+https://cristian.io/post/sonar-coverage/
