@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import es.eriktorr.katas.orders.domain.model.OrderReference;
 import es.eriktorr.katas.orders.domain.model.OrderRequest;
 import lombok.val;
@@ -15,6 +15,8 @@ import java.util.Optional;
 import static es.eriktorr.katas.orders.infrastructure.json.OrderFields.ORDER_REFERENCE_FIELD;
 
 public class OrderRequestDeserializer extends StdDeserializer<OrderRequest> {
+
+    private static final JsonNode BLANK_NODE = new TextNode(" ");
 
     public OrderRequestDeserializer() {
         super(OrderRequest.class);
@@ -29,7 +31,7 @@ public class OrderRequestDeserializer extends StdDeserializer<OrderRequest> {
 
     private String referenceFrom(JsonNode jsonNode) {
         return Optional.ofNullable(jsonNode.get(ORDER_REFERENCE_FIELD))
-                .orElse(NullNode.instance)
+                .orElse(BLANK_NODE)
                 .asText();
     }
 

@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @ToString(includeFieldNames = false)
 public class OrderReference {
 
-    @NotBlank(message = "Order reference cannot be empty") private final
+    @NotBlank(message = "Order reference cannot be blank") private final
     String value;
 
 }

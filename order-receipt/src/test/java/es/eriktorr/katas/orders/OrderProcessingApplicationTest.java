@@ -46,17 +46,16 @@ class OrderProcessingApplicationTest {
                 .expectBody().isEmpty();
 	}
 
-    @DisplayName("Process Order")
+    @DisplayName("Input Parameters Validation")
     @Test void
-    validate() {
+    fail_with_bad_request_error_when_input_parameters_are_invalid() {
         given(orderIdGenerator.nextOrderId()).willReturn(new OrderId(ORDER_ID));
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{}"))
                 .exchange()
-//                .expectStatus().isCreated()
-//                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
-                .expectBody().isEmpty();
+                .expectStatus().isBadRequest()
+                .expectBody().json("{\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Order reference cannot be blank\"}");
     }
 
 }
