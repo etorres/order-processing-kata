@@ -35,7 +35,7 @@ sonarqube {
 
 task jacocoMergeTest(type: JacocoMerge) {
     destinationFile = file(allTestCoverageFile)
-    executionData = project.fileTree(dir: '.', include:'**/build/jacoco/test.exec')
+    executionData = project.fileTree(dir: '.', includes:['**/build/jacoco/test.exec','**/build/jacoco/integrationTest.exec'])
 }
 
 task jacocoMerge(dependsOn: ['jacocoMergeTest']) {
