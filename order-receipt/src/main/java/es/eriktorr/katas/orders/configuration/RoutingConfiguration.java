@@ -2,6 +2,7 @@ package es.eriktorr.katas.orders.configuration;
 
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
+import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import es.eriktorr.katas.orders.infrastructure.web.OrderHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +26,8 @@ class RoutingConfiguration {
     }
 
     @Bean
-    OrderReceiver orderReceiver(JmsTemplate jmsTemplate) {
-        return new OrderReceiver(jmsTemplate);
+    OrderReceiver orderReceiver(EventStoreRepository eventStoreRepository, JmsTemplate jmsTemplate) {
+        return new OrderReceiver(eventStoreRepository, jmsTemplate);
     }
 
     @Bean

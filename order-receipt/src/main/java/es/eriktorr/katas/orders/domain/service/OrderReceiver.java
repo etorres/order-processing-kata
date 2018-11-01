@@ -1,6 +1,7 @@
 package es.eriktorr.katas.orders.domain.service;
 
 import es.eriktorr.katas.orders.domain.model.Order;
+import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import org.springframework.jms.core.JmsTemplate;
 import reactor.core.publisher.Mono;
 
@@ -8,9 +9,11 @@ import static es.eriktorr.katas.orders.configuration.JmsConfiguration.ORDER_QUEU
 
 public class OrderReceiver {
 
+    private final EventStoreRepository eventStoreRepository;
     private final JmsTemplate jmsTemplate;
 
-    public OrderReceiver(JmsTemplate jmsTemplate) {
+    public OrderReceiver(EventStoreRepository eventStoreRepository, JmsTemplate jmsTemplate) {
+        this.eventStoreRepository = eventStoreRepository;
         this.jmsTemplate = jmsTemplate;
     }
 

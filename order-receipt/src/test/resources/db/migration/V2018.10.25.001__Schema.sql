@@ -1,0 +1,8 @@
+CREATE TABLE event_store (
+  event_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  handle VARCHAR(64) NOT NULL,
+  aggregate_id VARCHAR(64) NOT NULL,
+  payload CLOB NOT NULL
+);
+
+COMMIT;
