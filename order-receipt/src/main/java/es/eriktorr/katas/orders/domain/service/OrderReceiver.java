@@ -2,27 +2,22 @@ package es.eriktorr.katas.orders.domain.service;
 
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
-import org.springframework.jms.core.JmsTemplate;
+import es.eriktorr.katas.orders.infrastructure.jms.OrderEventSender;
 import reactor.core.publisher.Mono;
-
-import static es.eriktorr.katas.orders.configuration.JmsConfiguration.ORDER_QUEUE;
 
 public class OrderReceiver {
 
     private final EventStoreRepository eventStoreRepository;
-    private final JmsTemplate jmsTemplate;
+    private final OrderEventSender orderEventSender;
 
-    public OrderReceiver(EventStoreRepository eventStoreRepository, JmsTemplate jmsTemplate) {
+    public OrderReceiver(EventStoreRepository eventStoreRepository, OrderEventSender orderEventSender) {
         this.eventStoreRepository = eventStoreRepository;
-        this.jmsTemplate = jmsTemplate;
+        this.orderEventSender = orderEventSender;
     }
 
     public Mono<Order> save(Order order) {
-        return eventStoreRepository.create(order)
-                .map(it -> {
-                    jmsTemplate.convertAndSend(ORDER_QUEUE, it);
-                    return it;
-                });
+        return eventStoreRepository.save(order)
+                .flatMap(orderEventSender::sendCreatedEvent);
     }
 
 }

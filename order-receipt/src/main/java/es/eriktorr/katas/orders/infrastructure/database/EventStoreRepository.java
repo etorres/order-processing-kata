@@ -17,10 +17,10 @@ public class EventStoreRepository {
         this.jsonMapper = orderJsonMapper;
     }
 
-    public Mono<Order> create(Order order) {
+    public Mono<Order> save(Order order) {
         return Mono.defer(() -> {
             jdbcTemplate.update("INSERT INTO event_store (timestamp, handle, aggregate_id, payload) VALUES (CURRENT_TIMESTAMP, ?, ?, ?)",
-                    new Object[]{ "order.created", order.getOrderId().getValue(), jsonMapper.toJson(order) },
+                    new Object[]{ "order.created", "order." + order.getOrderId().getValue(), jsonMapper.toJson(order) },
                     new int[]{ Types.VARCHAR, Types.VARCHAR, Types.CLOB });
             return Mono.just(order);
         });
