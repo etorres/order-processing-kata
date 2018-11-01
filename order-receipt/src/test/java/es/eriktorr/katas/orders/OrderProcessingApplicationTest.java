@@ -33,20 +33,20 @@ class OrderProcessingApplicationTest {
     @MockBean
     private OrderIdGenerator orderIdGenerator;
 
-    @DisplayName("Process Order")
+    @DisplayName("Create a new order")
 	@Test void
-	process_order() {
+	create_a_new_order() {
         given(orderIdGenerator.nextOrderId()).willReturn(new OrderId(ORDER_ID));
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{\"reference\":\"7158\"}"))
                 .exchange()
-//                .expectStatus().isCreated()
-//                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
+                .expectStatus().isCreated()
+                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
 	}
 
-    @DisplayName("Input Parameters Validation")
+    @DisplayName("Invalid input parameters will cause error")
     @Test void
     fail_with_bad_request_error_when_input_parameters_are_invalid() {
         given(orderIdGenerator.nextOrderId()).willReturn(new OrderId(ORDER_ID));
