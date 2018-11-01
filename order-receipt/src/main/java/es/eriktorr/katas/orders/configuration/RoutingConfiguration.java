@@ -2,7 +2,6 @@ package es.eriktorr.katas.orders.configuration;
 
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
-import es.eriktorr.katas.orders.domain.model.OrderRequest;
 import es.eriktorr.katas.orders.domain.model.StoreId;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver2;
@@ -12,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.reactive.function.server.RouterFunction;
-import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
@@ -52,9 +50,9 @@ class RoutingConfiguration {
     }
 
     @Bean
-    RouterFunction<ServerResponse> createOrderRoute(OrderReceiver orderReceiver, Validator validator) {
-        return route(POST("/stores/{storeId}/orders"), request -> request.bodyToMono(OrderRequest.class)
-                .flatMap(orderRequest -> orderFrom(request, orderRequest))
+    RouterFunction<ServerResponse> createOrderRoute(OrderReceiver orderReceiver) {
+        return route(POST("/stores/{storeId}/orders"), request -> request.bodyToMono(Order.class)
+                .flatMap(orderRequest -> orderFrom(request.pathVariable("storeId"), orderRequest))
                 .flatMap(this::validate)
                 .flatMap(orderReceiver::save)
                 .flatMap(order -> ServerResponse.created(URI.create("/orders/" + order.getOrderId())).build())
@@ -62,10 +60,10 @@ class RoutingConfiguration {
         );
     }
 
-    private Mono<? extends Order> orderFrom(ServerRequest request, OrderRequest orderRequest) {
+    private Mono<? extends Order> orderFrom(String storeId, Order orderRequest) {
         return Mono.just(new Order(
                 orderIdGenerator().nextOrderId(),
-                new StoreId(request.pathVariable("storeId")),
+                new StoreId(storeId),
                 orderRequest.getOrderReference()
         ));
     }
