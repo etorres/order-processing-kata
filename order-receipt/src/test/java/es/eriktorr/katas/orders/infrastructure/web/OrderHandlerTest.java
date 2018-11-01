@@ -1,9 +1,8 @@
 package es.eriktorr.katas.orders.infrastructure.web;
 
 import es.eriktorr.katas.orders.OrderProcessingApplication;
-import es.eriktorr.katas.orders.domain.model.OrderId;
-import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
-import es.eriktorr.katas.orders.infrastructure.web.utils.CreateOrderListener;
+import es.eriktorr.katas.orders.domain.model.*;
+import es.eriktorr.katas.orders.infrastructure.web.utils.CreateOrderEventListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,13 +33,16 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 class OrderHandlerTest {
 
     private static final String STORE_ID = "00-396-261";
-    private static final String ORDER_ID = "4472a477-931e-48b7-8bfb-95daa1ad0216";
+    private static final String ORDER_REFERENCE = "7158";
+
+    private static final OrderId ORDER_ID = new OrderId("4472a477-931e-48b7-8bfb-95daa1ad0216");
+    private static final Order ORDER = new Order(ORDER_ID, new StoreId(STORE_ID), new OrderReference(ORDER_REFERENCE));
 
     @TestConfiguration
     static class OrderHandlerTestConfiguration {
         @Bean
-        CreateOrderListener createOrderListener() {
-            return new CreateOrderListener();
+        CreateOrderEventListener createOrderListener() {
+            return new CreateOrderEventListener();
         }
     }
 
@@ -48,7 +50,7 @@ class OrderHandlerTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    private CreateOrderListener createOrderListener;
+    private CreateOrderEventListener createOrderEventListener;
 
     @MockBean
     private OrderIdGenerator orderIdGenerator;
@@ -56,22 +58,22 @@ class OrderHandlerTest {
     @DisplayName("Create a new order")
 	@Test void
 	create_a_new_order() {
-        given(orderIdGenerator.nextOrderId()).willReturn(new OrderId(ORDER_ID));
+        given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
-                .body(fromObject("{\"reference\":\"7158\"}"))
+                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\"}"))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
 
-        await().atMost(10L, SECONDS).until(() -> createOrderListener.isMessageReceived(), equalTo(true));
+        await().atMost(10L, SECONDS).until(() -> createOrderEventListener.eventReceived(ORDER), equalTo(true));
 	}
 
     @DisplayName("Invalid input parameters will cause error")
     @Test void
     fail_with_bad_request_error_when_input_parameters_are_invalid() {
-        given(orderIdGenerator.nextOrderId()).willReturn(new OrderId(ORDER_ID));
+        given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{}"))
