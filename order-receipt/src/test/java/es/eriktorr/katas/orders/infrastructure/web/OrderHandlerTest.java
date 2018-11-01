@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -18,6 +19,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
@@ -25,6 +29,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @Tag("integration")
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
+@AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderProcessingApplication.class)
 class OrderHandlerTest {
 
@@ -42,6 +47,9 @@ class OrderHandlerTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private CreateOrderListener createOrderListener;
+
     @MockBean
     private OrderIdGenerator orderIdGenerator;
 
@@ -56,6 +64,8 @@ class OrderHandlerTest {
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
+
+        await().atMost(10L, SECONDS).until(() -> createOrderListener.isMessageReceived(), equalTo(true));
 	}
 
     @DisplayName("Invalid input parameters will cause error")

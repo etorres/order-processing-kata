@@ -15,10 +15,13 @@ public class OrderReceiver {
     }
 
     public Mono<Order> save(Order order) {
-
-        // TODO
-
         return Mono.defer(() -> {
+
+
+
+
+            // TODO
+
             jmsTemplate.convertAndSend(ORDER_QUEUE, order);
             return Mono.just(order);
         });

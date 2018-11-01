@@ -27,6 +27,7 @@ apply plugin: 'io.spring.dependency-management'
 ext {
 	springCloudVersion = 'Finchley.SR2'
 	problemVersion = '0.22.0'
+    awaitilityVersion = '3.1.2'
 }
 
 dependencyManagement {
@@ -58,6 +59,8 @@ dependencies {
 	}
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    testImplementation("org.awaitility:awaitility:${awaitilityVersion}")
 }
 
 test {
