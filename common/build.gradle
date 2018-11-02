@@ -12,13 +12,14 @@ apply plugin: 'java'
 
 ext {
     jacksonVersion = '2.9.7'
+    junitVersion = '5.3.1'
 }
 
 dependencies {
     compileOnly("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 test {
