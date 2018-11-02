@@ -2,12 +2,9 @@ package es.eriktorr.katas.orders.configuration;
 
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
-import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
-import es.eriktorr.katas.orders.infrastructure.jms.OrderEventSender;
 import es.eriktorr.katas.orders.infrastructure.web.OrderHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -20,21 +17,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @Configuration
 class RoutingConfiguration {
-
-    @Bean
-    OrderIdGenerator orderIdGenerator() {
-        return new OrderIdGenerator();
-    }
-
-    @Bean
-    OrderEventSender orderEventSender(JmsTemplate jmsTemplate) {
-        return new OrderEventSender(jmsTemplate);
-    }
-
-    @Bean
-    OrderReceiver orderReceiver(EventStoreRepository eventStoreRepository, OrderEventSender orderEventSender) {
-        return new OrderReceiver(eventStoreRepository, orderEventSender);
-    }
 
     @Bean
     OrderHandler orderHandler(Validator validator, OrderIdGenerator orderIdGenerator, OrderReceiver orderReceiver) {

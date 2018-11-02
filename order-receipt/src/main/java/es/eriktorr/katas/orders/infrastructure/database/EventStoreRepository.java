@@ -3,6 +3,7 @@ package es.eriktorr.katas.orders.infrastructure.database;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.common.DomainEvent;
 import es.eriktorr.katas.orders.domain.model.Order;
+import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;

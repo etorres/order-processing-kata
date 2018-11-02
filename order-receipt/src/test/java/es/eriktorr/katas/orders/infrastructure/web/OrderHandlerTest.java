@@ -1,6 +1,6 @@
 package es.eriktorr.katas.orders.infrastructure.web;
 
-import es.eriktorr.katas.orders.OrderProcessingApplication;
+import es.eriktorr.katas.orders.OrderReceiptApplication;
 import es.eriktorr.katas.orders.domain.model.*;
 import es.eriktorr.katas.orders.infrastructure.web.utils.CreateOrderEventListener;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +29,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderProcessingApplication.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class)
 class OrderHandlerTest {
 
     private static final String STORE_ID = "00-396-261";
