@@ -15,9 +15,7 @@ allprojects {
     repositories {
         mavenCentral()
     }
-
     apply plugin: 'jacoco'
-
     jacoco {
         toolVersion = "0.8.2"
     }

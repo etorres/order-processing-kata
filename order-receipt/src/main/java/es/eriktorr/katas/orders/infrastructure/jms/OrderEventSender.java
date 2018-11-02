@@ -16,7 +16,7 @@ public class OrderEventSender {
 
     public Mono<Order> sendCreatedEvent(Order order) {
         return Mono.defer(() -> {
-            jmsTemplate.convertAndSend(ORDER_QUEUE, order);
+            jmsTemplate.convertAndSend(ORDER_QUEUE, order); // TODO : subscribe
             return Mono.just(order);
         });
     }
