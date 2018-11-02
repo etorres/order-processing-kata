@@ -15,9 +15,9 @@ public class OrderReceiver {
         this.orderEventSender = orderEventSender;
     }
 
-    public Mono<Order> save(Order order) {
-        return eventStoreRepository.save(order)
-                .flatMap(orderEventSender::sendCreatedEvent);
+    public Mono<Order> save(Mono<Order> order) {
+        return order.compose(it -> eventStoreRepository.save(it)
+                .doOnNext(orderEventSender::sendCreatedEvent));
     }
 
 }

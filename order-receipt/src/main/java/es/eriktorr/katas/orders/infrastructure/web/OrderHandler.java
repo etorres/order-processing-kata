@@ -34,24 +34,26 @@ public class OrderHandler {
     @NonNull
     public Mono<ServerResponse> createOrder(ServerRequest request) {
         return request.bodyToMono(Order.class)
-                .flatMap(orderRequest -> orderFrom(request.pathVariable("storeId"), orderRequest))
-                .flatMap(this::validate)
-                .flatMap(orderReceiver::save)
+                .map(orderRequest -> orderFrom(request.pathVariable("storeId"), orderRequest))
+                .doOnNext(this::validate)
+                .compose(orderReceiver::save)
                 .flatMap(order -> ServerResponse.created(pathTo(order)).build())
                 .onErrorResume(ConstraintViolationException.class, this::toBadRequest);
     }
 
-    private Mono<? extends Order> orderFrom(String storeId, Order orderRequest) {
-        return Mono.just(new Order(
+    private Order orderFrom(String storeId, Order orderRequest) {
+        return new Order(
                 orderIdGenerator.nextOrderId(),
                 new StoreId(storeId),
                 orderRequest.getOrderReference()
-        ));
+        );
     }
 
-    private Mono<? extends Order> validate(Order order) {
+    private void validate(Order order) {
         val violations = validator.validate(order);
-        return violations.isEmpty() ? Mono.just(order) : Mono.error(new ConstraintViolationException(violations));
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
     }
 
     private Mono<? extends ServerResponse> toBadRequest(ConstraintViolationException exception) {

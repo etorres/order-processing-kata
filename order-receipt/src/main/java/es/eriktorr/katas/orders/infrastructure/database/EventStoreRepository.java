@@ -9,7 +9,6 @@ import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import javax.sql.rowset.serial.SerialClob;
 import java.sql.Statement;
@@ -29,9 +28,8 @@ public class EventStoreRepository {
         this.clock = clock;
     }
 
-    public Mono<Order> save(Order order) {
-        return Mono.defer(() -> Mono.just(createdOrderEventFrom(order)))
-                .subscribeOn(Schedulers.elastic())
+    public Mono<Order> save(Mono<Order> order) {
+        return order.map(this::createdOrderEventFrom)
                 .map(DomainEvent::getValue);
     }
 
