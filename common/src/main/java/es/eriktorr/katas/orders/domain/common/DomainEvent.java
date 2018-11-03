@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class DomainEvent<AGGREGATE_ID extends SingleValue, VALUE> {
+public abstract class DomainEvent<A extends SingleValue, V> {
 
     @Getter private final
     long eventId;
@@ -16,12 +16,12 @@ public abstract class DomainEvent<AGGREGATE_ID extends SingleValue, VALUE> {
     LocalDateTime createdAt;
 
     @Getter private final
-    String Handle;
+    String handle;
 
     @Getter private final
-    AGGREGATE_ID aggregateId;
+    A aggregateId;
 
     @Getter private final
-    VALUE value;
+    V value;
 
 }

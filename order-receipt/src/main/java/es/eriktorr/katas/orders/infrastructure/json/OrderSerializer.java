@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import es.eriktorr.katas.orders.domain.common.SingleValue;
 import es.eriktorr.katas.orders.domain.model.Order;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
 import static es.eriktorr.katas.orders.infrastructure.json.OrderFields.*;
+import static org.springframework.util.StringUtils.trimWhitespace;
 
 public class OrderSerializer extends StdSerializer<Order> {
 
@@ -28,9 +28,10 @@ public class OrderSerializer extends StdSerializer<Order> {
     }
 
     private <T extends SingleValue> void writeOptional(JsonGenerator jsonGenerator, String field, T singleValue) throws IOException {
-        String value;
-        if (singleValue != null && !"".equals(value = StringUtils.trimWhitespace(singleValue.getValue()))) {
-            jsonGenerator.writeStringField(field, value);
+        if (singleValue == null) return;
+        final String trimmedValue = trimWhitespace(singleValue.getValue());
+        if (!"".equals(trimmedValue)) {
+            jsonGenerator.writeStringField(field, trimmedValue);
         }
     }
 
