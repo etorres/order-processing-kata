@@ -1,5 +1,6 @@
 package es.eriktorr.katas.orders.configuration;
 
+import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
 import es.eriktorr.katas.orders.infrastructure.web.OrderHandler;
@@ -19,8 +20,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 class RoutingConfiguration {
 
     @Bean
-    OrderHandler orderHandler(Validator validator, OrderIdGenerator orderIdGenerator, OrderReceiver orderReceiver) {
-        return new OrderHandler(validator, orderIdGenerator, orderReceiver);
+    OrderHandler orderHandler(Validator validator, Clock clock, OrderIdGenerator orderIdGenerator, OrderReceiver orderReceiver) {
+        return new OrderHandler(validator, clock, orderIdGenerator, orderReceiver);
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package es.eriktorr.katas.orders.infrastructure.web.utils;
 
 import es.eriktorr.katas.orders.domain.model.Order;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static es.eriktorr.katas.orders.configuration.JmsConfiguration.ORDER_QUEUE;
 
+@Slf4j
 public class CreateOrderEventListener {
 
     private static final int MAX_EVENTS_COUNT = 10;
@@ -23,6 +25,7 @@ public class CreateOrderEventListener {
         if (count.getAndIncrement() < MAX_EVENTS_COUNT) {
             orders.add(order);
         }
+        log.info("Event received: " + order);
     }
 
     public boolean eventReceived(Order order) {

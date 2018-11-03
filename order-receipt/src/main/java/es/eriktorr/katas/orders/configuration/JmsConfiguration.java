@@ -1,5 +1,9 @@
 package es.eriktorr.katas.orders.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.val;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +17,9 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import javax.jms.ConnectionFactory;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 @EnableJms
@@ -32,10 +39,19 @@ public class JmsConfiguration {
 
     @Bean
     MessageConverter jacksonJmsMessageConverter() {
-        val converter = new MappingJackson2MessageConverter();
-        converter.setTargetType(MessageType.TEXT);
-        converter.setTypeIdPropertyName("_type");
-        return converter;
+        val javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ISO_LOCAL_DATE));
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+        val objectMapper = new ObjectMapper();
+        objectMapper.registerModule(javaTimeModule);
+
+        val messageConverter = new MappingJackson2MessageConverter();
+        messageConverter.setTargetType(MessageType.TEXT);
+        messageConverter.setTypeIdPropertyName("_type");
+        messageConverter.setObjectMapper(objectMapper);
+
+        return messageConverter;
     }
 
 }

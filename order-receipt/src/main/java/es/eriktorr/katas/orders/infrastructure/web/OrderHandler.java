@@ -1,5 +1,6 @@
 package es.eriktorr.katas.orders.infrastructure.web;
 
+import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.model.StoreId;
@@ -24,11 +25,13 @@ public class OrderHandler {
     private final Validator validator;
     private final OrderReceiver orderReceiver;
     private final OrderIdGenerator orderIdGenerator;
+    private final Clock clock;
 
-    public OrderHandler(Validator validator, OrderIdGenerator orderIdGenerator, OrderReceiver orderReceiver) {
+    public OrderHandler(Validator validator, Clock clock, OrderIdGenerator orderIdGenerator, OrderReceiver orderReceiver) {
         this.validator = validator;
         this.orderReceiver = orderReceiver;
         this.orderIdGenerator = orderIdGenerator;
+        this.clock = clock;
     }
 
     @NonNull
@@ -45,7 +48,8 @@ public class OrderHandler {
         return new Order(
                 orderIdGenerator.nextOrderId(),
                 new StoreId(storeId),
-                orderRequest.getOrderReference()
+                orderRequest.getOrderReference(),
+                clock.now()
         );
     }
 
