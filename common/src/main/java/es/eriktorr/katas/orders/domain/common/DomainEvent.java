@@ -1,36 +1,15 @@
 package es.eriktorr.katas.orders.domain.common;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public interface DomainEvent<A extends SingleValue, V> {
 
-import java.time.LocalDateTime;
+    long getEventId();
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class DomainEvent<A extends SingleValue, V> {
+    DomainEventMetadata getMetadata();
 
-    @Getter private final
-    long eventId;
+    String getHandle();
 
-    @Getter private final
-    Metadata metadata;
+    A getAggregateId();
 
-    @Getter private final
-    String handle;
-
-    @Getter private final
-    A aggregateId;
-
-    @Getter private final
-    V value;
-
-    @AllArgsConstructor
-    protected static class Metadata {
-        @Getter private final
-        LocalDateTime timestamp;
-
-        @Getter private final
-        int version = 1;
-    }
+    V getValue();
 
 }

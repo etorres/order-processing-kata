@@ -47,6 +47,9 @@ class OrderHandlerTest {
     private static final OrderId ORDER_ID = new OrderId("4472a477-931e-48b7-8bfb-95daa1ad0216");
     private static final Order ORDER = new Order(ORDER_ID, new StoreId(STORE_ID), new OrderReference(ORDER_REFERENCE), LOCAL_DATE_TIME);
 
+    private static final Timestamp TIMESTAMP = Timestamp.valueOf(LOCAL_DATE_TIME.plus(1673L, ChronoUnit.MILLIS));
+    private static final OrderCreatedEvent ORDER_CREATED_EVENT = OrderCreatedEvent.build(1L, TIMESTAMP.toLocalDateTime(), ORDER);
+
     @TestConfiguration
     static class OrderHandlerTestConfiguration {
         @Bean
@@ -71,7 +74,7 @@ class OrderHandlerTest {
 	@Test void
 	create_a_new_order() {
         given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
-        given(clock.currentTimestamp()).willReturn(Timestamp.valueOf(LOCAL_DATE_TIME.plus(1673L, ChronoUnit.MILLIS)));
+        given(clock.currentTimestamp()).willReturn(TIMESTAMP);
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
@@ -80,7 +83,7 @@ class OrderHandlerTest {
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
 
-        await().atMost(10L, SECONDS).until(() -> createOrderEventListener.eventReceived(ORDER), equalTo(true));
+        await().atMost(10L, SECONDS).until(() -> createOrderEventListener.eventReceived(ORDER_CREATED_EVENT), equalTo(true));
 	}
 
     @DisplayName("Invalid input parameters will cause error")

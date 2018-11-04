@@ -1,9 +1,13 @@
 package es.eriktorr.katas.orders.configuration;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 
 @Configuration
 @EnableJms
+@Slf4j
 public class JmsConfiguration {
 
     public static final String ORDER_QUEUE = "order-queue";
@@ -33,6 +38,7 @@ public class JmsConfiguration {
             DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer
     ) {
         val jmsListenerContainerFactory = new DefaultJmsListenerContainerFactory();
+        jmsListenerContainerFactory.setErrorHandler(throwable -> log.error("Execution of JMS message listener failed", throwable));
         jmsListenerContainerFactoryConfigurer.configure(jmsListenerContainerFactory, connectionFactory);
         return jmsListenerContainerFactory;
     }
@@ -44,7 +50,7 @@ public class JmsConfiguration {
         javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         val objectMapper = new ObjectMapper();
-        objectMapper.registerModule(javaTimeModule);
+        objectMapper.registerModules(new Jdk8Module(), javaTimeModule, new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
 
         val messageConverter = new MappingJackson2MessageConverter();
         messageConverter.setTargetType(MessageType.TEXT);

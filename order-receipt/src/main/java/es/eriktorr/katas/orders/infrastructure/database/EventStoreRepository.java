@@ -1,9 +1,8 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
 import es.eriktorr.katas.orders.domain.common.Clock;
-import es.eriktorr.katas.orders.domain.common.DomainEvent;
-import es.eriktorr.katas.orders.domain.events.OrderCreatedEvent;
 import es.eriktorr.katas.orders.domain.model.Order;
+import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +14,8 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+
+import static es.eriktorr.katas.orders.domain.model.OrderCreatedEvent.ORDER_CREATED_EVENT_HANDLE;
 
 public class EventStoreRepository {
 
@@ -28,9 +29,8 @@ public class EventStoreRepository {
         this.clock = clock;
     }
 
-    public Mono<Order> save(Mono<Order> order) {
-        return order.map(this::createdOrderEventFrom)
-                .map(DomainEvent::getValue);
+    public Mono<OrderCreatedEvent> save(Mono<Order> order) {
+        return order.map(this::createdOrderEventFrom);
     }
 
     private OrderCreatedEvent createdOrderEventFrom(Order order) {
@@ -42,13 +42,13 @@ public class EventStoreRepository {
                     Statement.RETURN_GENERATED_KEYS
             );
             preparedStatement.setTimestamp(1, timestamp);
-            preparedStatement.setString(2, OrderCreatedEvent.ORDER_CREATED_EVENT_HANDLE);
+            preparedStatement.setString(2, ORDER_CREATED_EVENT_HANDLE);
             preparedStatement.setString(3, order.getOrderId().getValue());
             preparedStatement.setClob(4, new SerialClob(jsonMapper.toJson(order).toCharArray()));
             return preparedStatement;
         }, keyHolder);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
-        return new OrderCreatedEvent(eventId, timestamp.toLocalDateTime(), order);
+        return OrderCreatedEvent.build(eventId, timestamp.toLocalDateTime(), order);
     }
 
     private Map<String, Object> generatedKeys(GeneratedKeyHolder keyHolder) {

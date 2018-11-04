@@ -1,6 +1,7 @@
 package es.eriktorr.katas.orders.infrastructure.web;
 
 import es.eriktorr.katas.orders.domain.model.Order;
+import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.model.StoreId;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
@@ -67,7 +68,8 @@ public class OrderHandler {
                 .syncBody(Problem.valueOf(Status.BAD_REQUEST, errors));
     }
 
-    private URI pathTo(Order order) {
+    private URI pathTo(OrderCreatedEvent orderCreatedEvent) {
+        val order = orderCreatedEvent.getValue();
         return URI.create("/stores/" + order.getStoreId() + "/orders/" + order.getOrderId());
     }
 
