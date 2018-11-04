@@ -19,7 +19,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -68,6 +70,7 @@ class OrderHandlerTest {
 	create_a_new_order() {
         given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
         given(clock.now()).willReturn(LOCAL_DATE_TIME);
+        given(clock.currentTimestamp()).willReturn(Timestamp.valueOf(LOCAL_DATE_TIME.plus(673L, ChronoUnit.MILLIS)));
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\"}"))

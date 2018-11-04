@@ -13,7 +13,7 @@ public abstract class DomainEvent<A extends SingleValue, V> {
     long eventId;
 
     @Getter private final
-    LocalDateTime createdAt;
+    Metadata metadata;
 
     @Getter private final
     String handle;
@@ -23,5 +23,11 @@ public abstract class DomainEvent<A extends SingleValue, V> {
 
     @Getter private final
     V value;
+
+    @AllArgsConstructor
+    protected static class Metadata {
+        @Getter private final
+        LocalDateTime timestamp;
+    }
 
 }

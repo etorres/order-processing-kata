@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders.domain.model;
+package es.eriktorr.katas.orders.domain.events;
 
 import es.eriktorr.katas.orders.domain.common.DomainEvent;
 import es.eriktorr.katas.orders.domain.model.Order;
@@ -14,8 +14,8 @@ public class OrderCreatedEvent extends DomainEvent<OrderId, Order> {
 
     public static final String ORDER_CREATED_EVENT_HANDLE = "order.created";
 
-    public OrderCreatedEvent(long eventId, LocalDateTime createdAt, Order order) {
-        super(eventId, createdAt, ORDER_CREATED_EVENT_HANDLE, order.getOrderId(), order);
+    public OrderCreatedEvent(long eventId, LocalDateTime timestamp, Order order) {
+        super(eventId, new Metadata(timestamp), ORDER_CREATED_EVENT_HANDLE, order.getOrderId(), order);
     }
 
 }

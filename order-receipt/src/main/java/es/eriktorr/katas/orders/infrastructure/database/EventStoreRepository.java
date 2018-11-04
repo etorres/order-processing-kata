@@ -1,8 +1,9 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
+import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.common.DomainEvent;
+import es.eriktorr.katas.orders.domain.events.OrderCreatedEvent;
 import es.eriktorr.katas.orders.domain.model.Order;
-import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +12,6 @@ import reactor.core.publisher.Mono;
 
 import javax.sql.rowset.serial.SerialClob;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -20,10 +20,12 @@ public class EventStoreRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final OrderJsonMapper jsonMapper;
+    private final Clock clock;
 
-    public EventStoreRepository(JdbcTemplate jdbcTemplate, OrderJsonMapper orderJsonMapper) {
+    public EventStoreRepository(JdbcTemplate jdbcTemplate, OrderJsonMapper orderJsonMapper, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
         this.jsonMapper = orderJsonMapper;
+        this.clock = clock;
     }
 
     public Mono<Order> save(Mono<Order> order) {
@@ -33,20 +35,20 @@ public class EventStoreRepository {
 
     private OrderCreatedEvent createdOrderEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
-        val createdAt = order.getCreatedAt();
+        val timestamp = clock.currentTimestamp();
         jdbcTemplate.update(connection -> {
             val preparedStatement = connection.prepareStatement(
-                    "INSERT INTO event_store (created_at, handle, aggregate_id, payload) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO event_store (timestamp, handle, aggregate_id, payload) VALUES (?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
             );
-            preparedStatement.setTimestamp(1, Timestamp.valueOf(createdAt));
+            preparedStatement.setTimestamp(1, timestamp);
             preparedStatement.setString(2, OrderCreatedEvent.ORDER_CREATED_EVENT_HANDLE);
             preparedStatement.setString(3, order.getOrderId().getValue());
             preparedStatement.setClob(4, new SerialClob(jsonMapper.toJson(order).toCharArray()));
             return preparedStatement;
         }, keyHolder);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
-        return new OrderCreatedEvent(eventId, createdAt, order);
+        return new OrderCreatedEvent(eventId, timestamp.toLocalDateTime(), order);
     }
 
     private Map<String, Object> generatedKeys(GeneratedKeyHolder keyHolder) {
