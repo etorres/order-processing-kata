@@ -28,6 +28,9 @@ public abstract class DomainEvent<A extends SingleValue, V> {
     protected static class Metadata {
         @Getter private final
         LocalDateTime timestamp;
+
+        @Getter private final
+        int version = 1;
     }
 
 }

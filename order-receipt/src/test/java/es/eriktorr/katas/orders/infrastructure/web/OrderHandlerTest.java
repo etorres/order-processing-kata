@@ -21,6 +21,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,10 +38,11 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class)
 class OrderHandlerTest {
 
-    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.of(2018, 11, 3, 14, 48, 17, 242);
-
     private static final String STORE_ID = "00-396-261";
     private static final String ORDER_REFERENCE = "7158";
+    private static final String CREATED_AT = "2018-11-03T14:48:17.000000242";
+
+    private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.parse(CREATED_AT, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
     private static final OrderId ORDER_ID = new OrderId("4472a477-931e-48b7-8bfb-95daa1ad0216");
     private static final Order ORDER = new Order(ORDER_ID, new StoreId(STORE_ID), new OrderReference(ORDER_REFERENCE), LOCAL_DATE_TIME);
@@ -69,11 +71,10 @@ class OrderHandlerTest {
 	@Test void
 	create_a_new_order() {
         given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
-        given(clock.now()).willReturn(LOCAL_DATE_TIME);
-        given(clock.currentTimestamp()).willReturn(Timestamp.valueOf(LOCAL_DATE_TIME.plus(673L, ChronoUnit.MILLIS)));
+        given(clock.currentTimestamp()).willReturn(Timestamp.valueOf(LOCAL_DATE_TIME.plus(1673L, ChronoUnit.MILLIS)));
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
-                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\"}"))
+                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
@@ -86,13 +87,12 @@ class OrderHandlerTest {
     @Test void
     fail_with_bad_request_error_when_input_parameters_are_invalid() {
         given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
-        given(clock.now()).willReturn(LOCAL_DATE_TIME);
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{}"))
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody().json("{\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Order reference cannot be blank\"}");
+                .expectBody().json("{\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Creation date & time is needed, Order reference cannot be blank\"}");
     }
 
 }
