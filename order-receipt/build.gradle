@@ -64,7 +64,7 @@ dependencies {
 
 	implementation('org.springframework.boot:spring-boot-starter-jdbc')
 	runtimeOnly('com.h2database:h2')
-	testImplementation('org.flywaydb:flyway-core')
+	runtimeOnly('org.flywaydb:flyway-core')
 
 	implementation("org.zalando:jackson-datatype-problem:${problemVersion}") {
 		exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
