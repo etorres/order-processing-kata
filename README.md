@@ -18,6 +18,10 @@ gradle test integrationTest jacocoMerge sonarqube
 
 `docker run -d --name order-receipt -p 8080:8080 order-receipt:1.0.0`
 
+`docker-compose -f docker/docker-compose.yml up`
+
+`docker inspect docker_order-processing-kata-network`
+
 ## Usage
 
 ```text
@@ -42,3 +46,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 
 * [Web on Reactive Stack](https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html).
 * [API specification for the Reactor Core library](https://projectreactor.io/docs/core/release/api/index.html).
+
+## Examples
+
+* [](https://github.com/daggerok/spring-boot-rest-jms-activemq).

@@ -1,12 +1,11 @@
-version: '2'
+version: '2.1'
 services:
   activemq:
     container_name: activemq
-    image: webcenter/activemq:5.14.3
+    image: rmohr/activemq:5.15.6-alpine
     ports:
       - "61616:61616"
-    networks:
-      - order-processing-kata-network
+    networks: [order-processing-kata-network]
   order-receipt:
     container_name: order-receipt
     image: order-receipt:latest
@@ -16,8 +15,7 @@ services:
       - 8080
     ports:
       - 8080:8080
-    networks:
-      - order-processing-kata-network
+    networks: [order-processing-kata-network]
     links:
       - activemq:activemq
     depends_on:
