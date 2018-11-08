@@ -4,6 +4,7 @@ spring:
 spring.security.user:
   name: admin
   password: s3C4E7
+  roles: ACTUATOR
 management:
   endpoints.web:
     base-path: /management

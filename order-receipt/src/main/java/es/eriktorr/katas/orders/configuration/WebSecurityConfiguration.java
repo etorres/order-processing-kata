@@ -12,12 +12,15 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class WebSecurityConfiguration {
 
+    private static final String ACTUATOR_ROLE = "ACTUATOR";
+
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http.csrf().disable().authorizeExchange()
                 .matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .matchers(EndpointRequest.to(InfoEndpoint.class, HealthEndpoint.class)).permitAll()
-                .matchers(EndpointRequest.toAnyEndpoint()).hasAuthority("ACTUATOR")
+                .matchers(EndpointRequest.toAnyEndpoint()).hasRole(ACTUATOR_ROLE)
+                .pathMatchers("/", "/index.html").permitAll()
                 .pathMatchers("/stores/**").permitAll()
                 .anyExchange().authenticated().and()
                 .build();

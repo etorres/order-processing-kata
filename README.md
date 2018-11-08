@@ -1,10 +1,22 @@
 # Order Processing Kata
 
+## Domain Events
+
+`Order Created` >> `Order Placed`
+
 ## Build, test and report to SonarQube
 
 ```text
 gradle test integrationTest jacocoMerge sonarqube
 ```
+
+## Deploy in Docker
+
+`gradle :order-receipt:build`
+
+`gradle :order-receipt:jibDockerBuild`
+
+`docker run -d --name order-receipt -p 8080:8080 order-receipt:1.0.0`
 
 ## References
 

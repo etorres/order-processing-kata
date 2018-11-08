@@ -1,0 +1,27 @@
+version: '2'
+services:
+  activemq:
+    container_name: activemq
+    image: webcenter/activemq:5.14.3
+    ports:
+      - "61616:61616"
+    networks:
+      - order-processing-kata-network
+  order-receipt:
+    container_name: order-receipt
+    image: order-receipt:latest
+    environment:
+      SPRING_APPLICATION_JSON: '{"spring":{"profiles":{"active":"production"}}}'
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    networks:
+      - order-processing-kata-network
+    links:
+      - activemq:activemq
+    depends_on:
+      - activemq
+networks:
+  order-processing-kata-network:
+    driver: bridge
