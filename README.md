@@ -18,6 +18,12 @@ gradle test integrationTest jacocoMerge sonarqube
 
 `docker run -d --name order-receipt -p 8080:8080 order-receipt:1.0.0`
 
+## Usage
+
+```text
+curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","createdAt":"2018-11-03T14:48:17.000000242"}' http://localhost:8080/stores/00-396-261/orders
+```
+
 ## References
 
 ### Command Query Responsibility Segregation and Event Sourcing
