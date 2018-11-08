@@ -40,19 +40,34 @@ class HealthCheckFeatureTest {
         webTestClient.get().uri("/management/metrics")
                 .header("Authorization", "Basic " + accessToken())
                 .exchange()
-                .expectStatus().isOk()
-                .expectBody()
-                .json("{}");
+                .expectStatus().isOk();
     }
 
-    @DisplayName("Don't disclose collected metrics to unauthorized users")
+    @DisplayName("Don't disclose metrics to anonymous users")
     @Test void
-    do_not_disclose_collected_metrics_to_unauthorized_users() {
+    do_not_disclose_collected_metrics_to_anonymous_users() {
         webTestClient.get().uri("/management/metrics")
-                .header("Authorization", "Basic " + accessToken())
                 .exchange()
                 .expectStatus().isUnauthorized()
                 .expectBody().isEmpty();
+    }
+
+    @DisplayName("Don't disclose metrics to unauthorized users")
+    @Test void
+    do_not_disclose_collected_metrics_to_unauthorized_users() {
+        webTestClient.get().uri("/management/metrics")
+                .header("Authorization", "Basic NoNoNo")
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectBody().isEmpty();
+    }
+
+    @DisplayName("Display home page")
+    @Test void
+    display_home_page() {
+        webTestClient.get().uri("/")
+                .exchange()
+                .expectStatus().isOk();
     }
 
     private String accessToken() {
