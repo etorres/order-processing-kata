@@ -23,7 +23,8 @@ class JacksonConfiguration {
             builder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
             builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             builder.modules(
-                    new Jdk8Module(), new JavaTimeModule(),
+                    new Jdk8Module(),
+                    new JavaTimeModule(),
                     new ParameterNamesModule(JsonCreator.Mode.PROPERTIES),
                     new ProblemModule()
             );

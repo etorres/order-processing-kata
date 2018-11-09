@@ -1,0 +1,5 @@
+spring.activemq:
+  non-blocking-redelivery: true
+  packages:
+    trust-all: false
+    trusted: es.eriktorr

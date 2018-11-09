@@ -49,4 +49,4 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 
 ## Examples
 
-* [](https://github.com/daggerok/spring-boot-rest-jms-activemq).
+* [Docker+ActiveMQ](https://github.com/daggerok/spring-boot-rest-jms-activemq).

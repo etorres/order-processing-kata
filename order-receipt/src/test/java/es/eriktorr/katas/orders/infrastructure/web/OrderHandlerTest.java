@@ -32,6 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
 @Tag("integration")
+@DisplayName("Orders HTTP handler")
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient

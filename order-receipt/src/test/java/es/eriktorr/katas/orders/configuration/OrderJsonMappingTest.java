@@ -8,6 +8,7 @@ import es.eriktorr.katas.orders.domain.model.StoreId;
 import lombok.AllArgsConstructor;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("Jackson-based object mapper")
 class OrderJsonMappingTest {
 
     private ObjectMapper objectMapper;
@@ -34,6 +36,7 @@ class OrderJsonMappingTest {
     }
 
     @TestFactory
+    @DisplayName("Map order to JSON")
     Stream<DynamicTest> mapOrderFromToJson() {
         return Arrays.stream(new SampleCase[] {
                 new SampleCase(

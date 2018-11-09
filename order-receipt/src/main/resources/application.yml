@@ -1,38 +1,16 @@
 spring:
   application.name: order-processing
   profiles.active: test
-spring.datasource:
-    url: jdbc:h2:mem:orders_db;DB_CLOSE_DELAY=-1
-    username: sa
-    password: sa
-spring.security.user:
-  name: admin
-  password: s3C4E7
-  roles: ACTUATOR
-spring.jms:
-    listener:
-      concurrency: 5
-      max-concurrency: 10
-    template:
-      delivery-mode: non_persistent
-      priority: 100
-      qos-enabled: true
-      receive-timeout: 1000ms
-      time-to-live: 36000ms
-management:
-  endpoints.web:
-    base-path: /management
-    exposure.include: health,info,metrics,mappings
-  endpoint.health.show-details: WHEN_AUTHORIZED
+  profiles.include:
+    - h2
+    - jms
+    - activemq
+    - management
 ---
 spring:
   profiles: test
   activemq:
     broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
-    non-blocking-redelivery: true
-    packages:
-      trust-all: false
-      trusted: es.eriktorr
 ---
 spring:
   profiles: production
@@ -41,7 +19,3 @@ spring:
     password: password
     in-memory: false
     broker-url: tcp://172.19.0.2:61616
-    non-blocking-redelivery: true
-    packages:
-      trust-all: false
-      trusted: es.eriktorr

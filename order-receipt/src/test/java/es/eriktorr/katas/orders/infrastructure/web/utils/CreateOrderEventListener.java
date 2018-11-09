@@ -16,20 +16,20 @@ public class CreateOrderEventListener {
 
     private static final int MAX_EVENTS_COUNT = 10;
 
-    private final List<OrderCreatedEvent> events = Collections.synchronizedList(new ArrayList<>(10));
+    private static final List<OrderCreatedEvent> EVENTS = Collections.synchronizedList(new ArrayList<>(10));
 
     private final AtomicInteger count = new AtomicInteger(0);
 
     @JmsListener(destination = ORDER_QUEUE, containerFactory = "jmsListenerContainerFactory")
     public void process(OrderCreatedEvent orderCreatedEvent) {
         if (count.getAndIncrement() < MAX_EVENTS_COUNT) {
-            events.add(orderCreatedEvent);
+            EVENTS.add(orderCreatedEvent);
         }
         log.info("Event received: " + orderCreatedEvent);
     }
 
     public boolean eventReceived(OrderCreatedEvent orderCreatedEvent) {
-        return events.contains(orderCreatedEvent);
+        return EVENTS.contains(orderCreatedEvent);
     }
 
 }

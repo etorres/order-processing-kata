@@ -1,0 +1,10 @@
+spring.jms:
+  listener:
+    concurrency: 5
+    max-concurrency: 10
+  template:
+    delivery-mode: non_persistent
+    priority: 100
+    qos-enabled: true
+    receive-timeout: 1000ms
+    time-to-live: 36000ms

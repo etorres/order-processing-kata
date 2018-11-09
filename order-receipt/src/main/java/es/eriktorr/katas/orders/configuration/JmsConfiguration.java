@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -21,9 +19,6 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import javax.jms.ConnectionFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Configuration
 @EnableJms
@@ -45,12 +40,12 @@ public class JmsConfiguration {
 
     @Bean
     MessageConverter jacksonJmsMessageConverter() {
-        val javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ISO_LOCAL_DATE));
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-
         val objectMapper = new ObjectMapper();
-        objectMapper.registerModules(new Jdk8Module(), javaTimeModule, new ParameterNamesModule(JsonCreator.Mode.PROPERTIES));
+        objectMapper.registerModules(
+                new Jdk8Module(),
+                new JavaTimeModule(),
+                new ParameterNamesModule(JsonCreator.Mode.PROPERTIES)
+        );
 
         val messageConverter = new MappingJackson2MessageConverter();
         messageConverter.setTargetType(MessageType.TEXT);

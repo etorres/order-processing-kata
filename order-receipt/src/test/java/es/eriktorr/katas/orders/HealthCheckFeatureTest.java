@@ -15,6 +15,7 @@ import org.springframework.util.Base64Utils;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Tag("integration")
+@DisplayName("Health check feature")
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
