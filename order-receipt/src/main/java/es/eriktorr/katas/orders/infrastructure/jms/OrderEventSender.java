@@ -3,18 +3,20 @@ package es.eriktorr.katas.orders.infrastructure.jms;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import org.springframework.jms.core.JmsTemplate;
 
-import static es.eriktorr.katas.orders.configuration.JmsConfiguration.ORDER_QUEUE;
+import javax.jms.Queue;
 
 public class OrderEventSender {
 
     private final JmsTemplate jmsTemplate;
+    private final Queue ordersQueue;
 
-    public OrderEventSender(JmsTemplate jmsTemplate) {
+    public OrderEventSender(JmsTemplate jmsTemplate, Queue ordersQueue) {
         this.jmsTemplate = jmsTemplate;
+        this.ordersQueue = ordersQueue;
     }
 
     public void send(OrderCreatedEvent orderCreatedEvent) {
-        jmsTemplate.convertAndSend(ORDER_QUEUE, orderCreatedEvent);
+        jmsTemplate.convertAndSend(ordersQueue, orderCreatedEvent);
     }
 
 }

@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static es.eriktorr.katas.orders.configuration.JmsConfiguration.ORDER_QUEUE;
-
 @Slf4j
 public class CreateOrderEventListener {
 
@@ -20,7 +18,7 @@ public class CreateOrderEventListener {
 
     private final AtomicInteger count = new AtomicInteger(0);
 
-    @JmsListener(destination = ORDER_QUEUE, containerFactory = "jmsListenerContainerFactory")
+    @JmsListener(destination = "${orders.queue.name}", containerFactory = "jmsListenerContainerFactory")
     public void process(OrderCreatedEvent orderCreatedEvent) {
         if (count.getAndIncrement() < MAX_EVENTS_COUNT) {
             EVENTS.add(orderCreatedEvent);

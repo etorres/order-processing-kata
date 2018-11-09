@@ -2,10 +2,11 @@ spring:
   application.name: order-processing
   profiles.active: test
   profiles.include:
+    - activemq
     - h2
     - jms
-    - activemq
     - management
+    - orders
 ---
 spring:
   profiles: test

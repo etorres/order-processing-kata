@@ -8,6 +8,8 @@ import es.eriktorr.katas.orders.domain.service.OrderReceiver;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import es.eriktorr.katas.orders.infrastructure.jms.OrderEventSender;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -40,8 +42,8 @@ public class OrderReceiptApplication {
     }
 
     @Bean
-    OrderEventSender orderEventSender(JmsTemplate jmsTemplate) {
-        return new OrderEventSender(jmsTemplate);
+    OrderEventSender orderEventSender(JmsTemplate jmsTemplate, @Value("${orders.queue.name}") final String ordersQueueName) {
+        return new OrderEventSender(jmsTemplate, new ActiveMQQueue(ordersQueueName));
     }
 
     @Bean

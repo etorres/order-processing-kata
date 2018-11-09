@@ -25,8 +25,6 @@ import javax.jms.ConnectionFactory;
 @Slf4j
 public class JmsConfiguration {
 
-    public static final String ORDER_QUEUE = "order-queue";
-
     @Bean
     JmsListenerContainerFactory<DefaultMessageListenerContainer> jmsListenerContainerFactory(
             ConnectionFactory connectionFactory,
