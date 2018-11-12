@@ -57,7 +57,7 @@ class CreatedOrderEventListenerTest {
     );
 
     private static final OrderPlacedEvent ORDER_PLACED_EVENT = OrderPlacedEvent.build(
-            1L, CREATED_AT.plus(984L, ChronoUnit.MILLIS), ORDER
+            Long.MAX_VALUE, CREATED_AT.plus(984L, ChronoUnit.MILLIS), ORDER
     );
 
     @TestConfiguration
@@ -92,7 +92,7 @@ class CreatedOrderEventListenerTest {
 
         orderCreatedEventSender.send(ORDER_CREATED_EVENT);
 
-        await().atMost(2L, SECONDS).until(() -> orderPlacedEventListener.eventReceived(ORDER_PLACED_EVENT), equalTo(true));
+        await().atMost(10L, SECONDS).until(() -> orderPlacedEventListener.eventReceived(ORDER_PLACED_EVENT), equalTo(true));
     }
 
 }
