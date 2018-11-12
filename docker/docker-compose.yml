@@ -20,6 +20,16 @@ services:
       - activemq:activemq
     depends_on:
       - activemq
+  order-placement:
+    container_name: order-placement
+    image: order-placement:latest
+    environment:
+       SPRING_APPLICATION_JSON: '{"spring":{"profiles":{"active":"production"}}}'
+    networks: [order-processing-kata-network]
+    links:
+      - activemq:activemq
+    depends_on:
+      - activemq
 networks:
   order-processing-kata-network:
     driver: bridge

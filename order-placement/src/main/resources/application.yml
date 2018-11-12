@@ -1,11 +1,11 @@
 spring:
-  application.name: order-receipt
+  application.name: order-placement
   profiles.active: test
   profiles.include:
     - activemq
-    - h2
+#    - h2
     - jms
-    - management
+#    - management
     - orders
 ---
 spring:

@@ -13,11 +13,26 @@ buildscript {
 plugins {
     id 'io.franzbecker.gradle-lombok' version '1.14'
     id 'java'
+    id 'com.google.cloud.tools.jib' version '0.9.13'
 }
 
 lombok {
     version = "1.16.18"
     sha256 = "9d957f572386b9e257093a45b148f9b411cff80d9efd55eaf6fca27002d2e4d9"
+}
+
+jib {
+    to {
+        image = "${project.name}:${project.version}"
+        tags = [project.version,'latest']
+    }
+    from {
+        image = 'openjdk:8-jre-alpine'
+    }
+    container {
+        useCurrentTimestamp = true
+        jvmFlags = ['-Xms512m', '-Xmx512m']
+    }
 }
 
 apply plugin: 'java'
@@ -37,8 +52,8 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation('org.springframework.boot:spring-boot-starter-security')
-    implementation('org.springframework.boot:spring-boot-starter-actuator')
+//    implementation('org.springframework.boot:spring-boot-starter-security')
+//    implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
     implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
@@ -46,13 +61,13 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-webflux')
     implementation('org.springframework.boot:spring-boot-starter-activemq')
 
-    implementation('org.springframework.boot:spring-boot-starter-jdbc')
-    runtimeOnly('com.h2database:h2')
-    testImplementation('org.flywaydb:flyway-core')
+//    implementation('org.springframework.boot:spring-boot-starter-jdbc')
+//    runtimeOnly('com.h2database:h2')
+//    testImplementation('org.flywaydb:flyway-core')
 
-    implementation("org.zalando:jackson-datatype-problem:${problemVersion}") {
-        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
-    }
+//    implementation("org.zalando:jackson-datatype-problem:${problemVersion}") {
+//        exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+//    }
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit', module: 'junit'
