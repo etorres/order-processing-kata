@@ -5,18 +5,18 @@ import org.springframework.jms.core.JmsTemplate;
 
 import javax.jms.Queue;
 
-public class OrderEventSender {
+public class OrderCreatedEventSender {
 
     private final JmsTemplate jmsTemplate;
-    private final Queue ordersQueue;
+    private final Queue orderCreatedEventQueue;
 
-    public OrderEventSender(JmsTemplate jmsTemplate, Queue ordersQueue) {
+    public OrderCreatedEventSender(JmsTemplate jmsTemplate, Queue orderCreatedEventQueue) {
         this.jmsTemplate = jmsTemplate;
-        this.ordersQueue = ordersQueue;
+        this.orderCreatedEventQueue = orderCreatedEventQueue;
     }
 
     public void send(OrderCreatedEvent orderCreatedEvent) {
-        jmsTemplate.convertAndSend(ordersQueue, orderCreatedEvent);
+        jmsTemplate.convertAndSend(orderCreatedEventQueue, orderCreatedEvent);
     }
 
 }

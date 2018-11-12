@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
-public class CreateOrderEventListener {
+public class OrderCreatedEventListener {
 
     private static final int MAX_EVENTS_COUNT = 10;
 
@@ -18,7 +18,7 @@ public class CreateOrderEventListener {
 
     private final AtomicInteger count = new AtomicInteger(0);
 
-    @JmsListener(destination = "${orders.queue.name}", containerFactory = "jmsListenerContainerFactory")
+    @JmsListener(destination = "${order.created.event.queue.name}", containerFactory = "jmsListenerContainerFactory")
     public void process(OrderCreatedEvent orderCreatedEvent) {
         if (count.getAndIncrement() < MAX_EVENTS_COUNT) {
             EVENTS.add(orderCreatedEvent);

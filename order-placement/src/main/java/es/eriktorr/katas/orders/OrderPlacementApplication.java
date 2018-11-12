@@ -1,16 +1,20 @@
 package es.eriktorr.katas.orders;
 
 import es.eriktorr.katas.orders.configuration.JmsConfiguration;
-import es.eriktorr.katas.orders.infrastructure.jms.CreateOrderEventListener;
+import es.eriktorr.katas.orders.domain.common.Clock;
+import es.eriktorr.katas.orders.infrastructure.jms.OrderCreatedEventListener;
+import es.eriktorr.katas.orders.infrastructure.jms.OrderPlacedEventSender;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jms.core.JmsTemplate;
 
-@SpringBootApplication(scanBasePackageClasses = JmsConfiguration.class
-)
+@SpringBootApplication(scanBasePackageClasses = JmsConfiguration.class)
 public class OrderPlacementApplication {
 
     public static void main(String[] args) {
@@ -24,8 +28,21 @@ public class OrderPlacementApplication {
     }
 
     @Bean
-    CreateOrderEventListener createOrderListener() {
-        return new CreateOrderEventListener();
+    Clock clock() {
+        return new Clock();
+    }
+
+    @Bean
+    OrderPlacedEventSender orderPlacedEventSender(
+            JmsTemplate jmsTemplate,
+            @Value("${order.placed.event.queue.name}") final String placedOrdersQueueName
+    ) {
+        return new OrderPlacedEventSender(jmsTemplate, new ActiveMQQueue(placedOrdersQueueName));
+    }
+
+    @Bean
+    OrderCreatedEventListener orderCreatedEventListener(OrderPlacedEventSender orderPlacedEventSender, Clock clock) {
+        return new OrderCreatedEventListener(orderPlacedEventSender, clock);
     }
 
 }

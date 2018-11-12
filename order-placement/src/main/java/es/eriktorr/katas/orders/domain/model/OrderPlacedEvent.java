@@ -7,9 +7,9 @@ import lombok.Value;
 import java.time.LocalDateTime;
 
 @Value
-public class OrderCreatedEvent implements DomainEvent<OrderId, Order> {
+public class OrderPlacedEvent implements DomainEvent<OrderId, Order> {
 
-    public static final String ORDER_CREATED_EVENT_HANDLE = "order.created";
+    public static final String ORDER_PLACED_EVENT_HANDLE = "order.placed";
     public static final int SCHEMA_VERSION = 1;
 
     private final
@@ -27,13 +27,14 @@ public class OrderCreatedEvent implements DomainEvent<OrderId, Order> {
     private final
     Order value;
 
-    public static OrderCreatedEvent build(long eventId, LocalDateTime timestamp, Order order) {
-        return new OrderCreatedEvent(
+    public static OrderPlacedEvent build(long eventId, LocalDateTime timestamp, Order order) {
+        return new OrderPlacedEvent(
                 eventId,
                 new DomainEventMetadata(timestamp, SCHEMA_VERSION),
-                ORDER_CREATED_EVENT_HANDLE,
+                ORDER_PLACED_EVENT_HANDLE,
                 order.getOrderId(),
-                order);
+                order
+        );
     }
 
 }

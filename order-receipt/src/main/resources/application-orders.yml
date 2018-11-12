@@ -1,1 +1,1 @@
-orders.queue.name: orders-queue
+order.created.event.queue.name: order-created-event-queue

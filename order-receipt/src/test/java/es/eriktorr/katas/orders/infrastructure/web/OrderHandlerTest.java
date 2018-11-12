@@ -3,7 +3,7 @@ package es.eriktorr.katas.orders.infrastructure.web;
 import es.eriktorr.katas.orders.OrderReceiptApplication;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.*;
-import es.eriktorr.katas.orders.infrastructure.web.utils.CreateOrderEventListener;
+import es.eriktorr.katas.orders.infrastructure.web.utils.OrderCreatedEventListener;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -54,8 +54,8 @@ class OrderHandlerTest {
     @TestConfiguration
     static class OrderHandlerTestConfiguration {
         @Bean
-        CreateOrderEventListener createOrderListener() {
-            return new CreateOrderEventListener();
+        OrderCreatedEventListener createOrderListener() {
+            return new OrderCreatedEventListener();
         }
     }
 
@@ -63,7 +63,7 @@ class OrderHandlerTest {
     private WebTestClient webTestClient;
 
     @Autowired
-    private CreateOrderEventListener createOrderEventListener;
+    private OrderCreatedEventListener orderCreatedEventListener;
 
     @MockBean
     private OrderIdGenerator orderIdGenerator;
@@ -84,7 +84,7 @@ class OrderHandlerTest {
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
 
-        await().atMost(10L, SECONDS).until(() -> createOrderEventListener.eventReceived(ORDER_CREATED_EVENT), equalTo(true));
+        await().atMost(10L, SECONDS).until(() -> orderCreatedEventListener.eventReceived(ORDER_CREATED_EVENT), equalTo(true));
 	}
 
     @DisplayName("Invalid input parameters will cause error")

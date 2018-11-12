@@ -6,7 +6,7 @@ import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.service.OrderReceiver;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
-import es.eriktorr.katas.orders.infrastructure.jms.OrderEventSender;
+import es.eriktorr.katas.orders.infrastructure.jms.OrderCreatedEventSender;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jms.core.JmsTemplate;
 
-@SpringBootApplication(scanBasePackageClasses = { WebSecurityConfiguration.class })
+@SpringBootApplication(scanBasePackageClasses = WebSecurityConfiguration.class)
 public class OrderReceiptApplication {
 
     public static void main(String[] args) {
@@ -42,13 +42,16 @@ public class OrderReceiptApplication {
     }
 
     @Bean
-    OrderEventSender orderEventSender(JmsTemplate jmsTemplate, @Value("${orders.queue.name}") final String ordersQueueName) {
-        return new OrderEventSender(jmsTemplate, new ActiveMQQueue(ordersQueueName));
+    OrderCreatedEventSender orderCreatedEventSender(
+            JmsTemplate jmsTemplate,
+            @Value("${order.created.event.queue.name}") final String createdOrdersQueueName
+    ) {
+        return new OrderCreatedEventSender(jmsTemplate, new ActiveMQQueue(createdOrdersQueueName));
     }
 
     @Bean
-    OrderReceiver orderReceiver(EventStoreRepository eventStoreRepository, OrderEventSender orderEventSender) {
-        return new OrderReceiver(eventStoreRepository, orderEventSender);
+    OrderReceiver orderReceiver(EventStoreRepository eventStoreRepository, OrderCreatedEventSender orderCreatedEventSender) {
+        return new OrderReceiver(eventStoreRepository, orderCreatedEventSender);
     }
 
     @Bean
