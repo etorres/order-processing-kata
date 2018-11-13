@@ -19,4 +19,4 @@ spring:
     user: admin
     password: password
     in-memory: false
-    broker-url: tcp://172.19.0.2:61616
+    broker-url: tcp://172.19.0.3:61616

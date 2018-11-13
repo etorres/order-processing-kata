@@ -3,8 +3,18 @@ services:
   activemq:
     container_name: activemq
     image: rmohr/activemq:5.15.6-alpine
+    expose:
+      - 61616
     ports:
-      - "61616:61616"
+      - 61616:61616
+    networks: [order-processing-kata-network]
+  h2:
+    container_name: h2
+    image: oscarfonts/h2:alpine
+    expose:
+      - 1521
+    ports:
+      - 8081:81
     networks: [order-processing-kata-network]
   order-receipt:
     container_name: order-receipt
@@ -20,6 +30,7 @@ services:
       - activemq:activemq
     depends_on:
       - activemq
+      - h2
   order-placement:
     container_name: order-placement
     image: order-placement:latest
