@@ -20,7 +20,13 @@ gradle test integrationTest jacocoMerge sonarqube
 
 `docker-compose -f docker/docker-compose.yml up`
 
+`docker-compose -f docker/docker-compose.yml ps`
+
 `docker inspect docker_order-processing-kata-network`
+
+`docker exec -it -u root activemq /bin/ash`
+
+`apk update && apk add curl`
 
 ## Usage
 
