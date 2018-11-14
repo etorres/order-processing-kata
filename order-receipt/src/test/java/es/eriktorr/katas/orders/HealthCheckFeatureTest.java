@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -19,7 +20,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class, properties = {
+        "spring.security.user.name=user",
+        "spring.security.user.password=password"
+})
 class HealthCheckFeatureTest {
 
     @Autowired
@@ -72,7 +76,7 @@ class HealthCheckFeatureTest {
     }
 
     private String accessToken() {
-        return Base64Utils.encodeToString(("admin:s3C4E7").getBytes(UTF_8));
+        return Base64Utils.encodeToString(("user:password").getBytes(UTF_8));
     }
 
 }

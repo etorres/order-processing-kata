@@ -1,9 +1,8 @@
 spring.security.user:
   name: admin
   password: s3C4E7
-  roles: ACTUATOR
 management:
   endpoints.web:
     base-path: /management
-    exposure.include: health,info,metrics,mappings
+    exposure.include: health,info,metrics,mappings,caches
   endpoint.health.show-details: WHEN_AUTHORIZED

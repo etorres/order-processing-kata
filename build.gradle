@@ -14,6 +14,7 @@ apply plugin: 'org.sonarqube'
 allprojects {
     repositories {
         mavenCentral()
+        maven { url "https://repo.spring.io/milestone" }
     }
     apply plugin: 'jacoco'
     jacoco {
