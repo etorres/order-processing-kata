@@ -61,6 +61,7 @@ dependencies {
 
 	implementation('org.springframework.boot:spring-boot-starter-webflux')
 	implementation('org.springframework.boot:spring-boot-starter-activemq')
+	implementation('org.messaginghub:pooled-jms')
 
 	implementation('org.springframework.boot:spring-boot-starter-jdbc')
 	runtimeOnly('com.h2database:h2')

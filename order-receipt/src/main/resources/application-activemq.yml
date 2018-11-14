@@ -3,3 +3,6 @@ spring.activemq:
   packages:
     trust-all: false
     trusted: es.eriktorr
+  pool:
+    enabled: true
+    max-connections: 10
