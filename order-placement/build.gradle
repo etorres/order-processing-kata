@@ -17,8 +17,8 @@ plugins {
 }
 
 lombok {
-    version = "1.18.2"
-    sha256 = "f13db210efa2092a58bb7befce58ffa502e5fefc5e1099f45007074008756bc0"
+    version = "1.18.4"
+    sha256 = "39f3922deb679b1852af519eb227157ef2dd0a21eec3542c8ce1b45f2df39742"
 }
 
 jib {
