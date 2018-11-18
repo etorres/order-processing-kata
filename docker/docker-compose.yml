@@ -22,6 +22,15 @@ services:
     ports:
       - 8081:81
     networks: [order-processing-kata-network]
+  flyway:
+    container_name: flyway
+    image: boxfuse/flyway:5.2.1-alpine
+    command: -url=jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db -user=sa -password=sa migrate
+    volumes:
+      - ./db/migration:/flyway/sql
+    networks: [order-processing-kata-network]
+    depends_on:
+      - h2
   order-receipt:
     container_name: order-receipt
     image: order-receipt:latest
@@ -33,13 +42,10 @@ services:
     depends_on:
       - h2
       - activemq
-    links:
-      - h2:h2.local
-      - activemq:activemq.local
     environment:
       SPRING_PROFILES_ACTIVE: 'production'
-      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2.local:1521/mem:orders_db;DB_CLOSE_DELAY=-1'
-      SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq.local:61616'
+      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
+      SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
   order-placement:
     container_name: order-placement
     image: order-placement:latest
@@ -47,13 +53,10 @@ services:
     depends_on:
       - h2
       - activemq
-    links:
-      - h2:h2.local
-      - activemq:activemq.local
     environment:
       SPRING_PROFILES_ACTIVE: 'production'
-      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2.local:1521/mem:orders_db;DB_CLOSE_DELAY=-1'
-      SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq.local:61616'
+      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
+      SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
 networks:
   order-processing-kata-network:
     driver: bridge
