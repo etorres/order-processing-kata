@@ -65,6 +65,7 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter-jdbc')
     runtimeOnly('com.h2database:h2')
+    testRuntimeOnly('org.flywaydb:flyway-core')
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'junit', module: 'junit'

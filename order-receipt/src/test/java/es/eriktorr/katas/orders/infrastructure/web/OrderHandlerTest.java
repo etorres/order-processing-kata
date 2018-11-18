@@ -33,7 +33,9 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @DisplayName("Orders HTTP handler")
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class, properties = {
+        "spring.flyway.locations=filesystem:/Users/etorres/IdeaProjects/order-processing-kata/docker/db/migration"
+})
 class OrderHandlerTest {
 
     private static final String STORE_ID = "00-396-261";

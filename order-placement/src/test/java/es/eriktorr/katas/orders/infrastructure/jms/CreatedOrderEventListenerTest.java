@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -32,7 +33,9 @@ import static org.mockito.BDDMockito.given;
 @DisplayName("Created order event listener")
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(classes = OrderPlacementApplication.class)
+@SpringBootTest(classes = OrderPlacementApplication.class, properties = {
+        "spring.flyway.locations=filesystem:/Users/etorres/IdeaProjects/order-processing-kata/docker/db/migration"
+})
 class CreatedOrderEventListenerTest {
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2018, 11, 11, 12, 27, 34, 897);
@@ -53,12 +56,15 @@ class CreatedOrderEventListenerTest {
             ORDER
     );
 
+    private static final LocalDateTime PROCESSED_AT = CREATED_AT.plus(984L, ChronoUnit.MILLIS);
+
     private static final OrderPlacedEvent ORDER_PLACED_EVENT = OrderPlacedEvent.build(
-            Long.MAX_VALUE, CREATED_AT.plus(984L, ChronoUnit.MILLIS), ORDER
+            1L, PROCESSED_AT, ORDER
     );
 
     @TestConfiguration
     static class CreateOrderEventListenerTestConfiguration {
+
         @Bean
         OrderCreatedEventSender orderCreatedEventSender(
                 JmsTemplate jmsTemplate,
@@ -85,7 +91,7 @@ class CreatedOrderEventListenerTest {
     @DisplayName("Handle created order event")
     @Test void
     handle_created_order_event() {
-        given(clock.now()).willReturn(CREATED_AT.plus(984L, ChronoUnit.MILLIS));
+        given(clock.currentTimestamp()).willReturn(Timestamp.valueOf(PROCESSED_AT));
 
         orderCreatedEventSender.send(ORDER_CREATED_EVENT);
 
