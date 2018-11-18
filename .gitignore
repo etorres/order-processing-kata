@@ -18,6 +18,10 @@
 *.ipr
 /out/
 
+### EnvFile plugin ###
+
+.env
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
