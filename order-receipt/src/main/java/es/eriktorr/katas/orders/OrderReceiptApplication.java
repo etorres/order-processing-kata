@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.eriktorr.katas.orders.configuration.WebSecurityConfiguration;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
-import es.eriktorr.katas.orders.domain.service.OrderReceiver;
+import es.eriktorr.katas.orders.domain.services.OrderReceiver;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import es.eriktorr.katas.orders.infrastructure.jms.OrderCreatedEventSender;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;

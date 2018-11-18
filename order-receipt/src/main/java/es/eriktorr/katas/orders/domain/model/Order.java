@@ -1,5 +1,6 @@
 package es.eriktorr.katas.orders.domain.model;
 
+import es.eriktorr.katas.orders.domain.common.WithIdentifiableOrder;
 import lombok.Value;
 
 import javax.validation.Valid;
@@ -7,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Value
-public class Order {
+public class Order implements WithIdentifiableOrder {
 
     @Valid
     @NotNull(message = "Order Id is needed") private final

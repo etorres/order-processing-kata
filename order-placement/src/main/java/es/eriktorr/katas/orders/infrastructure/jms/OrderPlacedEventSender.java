@@ -15,7 +15,7 @@ public class OrderPlacedEventSender {
         this.orderPlacedEventQueue = orderPlacedEventQueue;
     }
 
-    void send(OrderPlacedEvent orderPlacedEvent) {
+    public void send(OrderPlacedEvent orderPlacedEvent) {
         jmsTemplate.convertAndSend(orderPlacedEventQueue, orderPlacedEvent);
     }
 

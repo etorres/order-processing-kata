@@ -1,7 +1,7 @@
 package es.eriktorr.katas.orders.configuration;
 
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
-import es.eriktorr.katas.orders.domain.service.OrderReceiver;
+import es.eriktorr.katas.orders.domain.services.OrderReceiver;
 import es.eriktorr.katas.orders.infrastructure.web.OrderHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

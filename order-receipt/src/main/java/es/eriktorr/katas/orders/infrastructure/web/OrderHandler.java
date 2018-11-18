@@ -4,7 +4,7 @@ import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.model.StoreId;
-import es.eriktorr.katas.orders.domain.service.OrderReceiver;
+import es.eriktorr.katas.orders.domain.services.OrderReceiver;
 import lombok.val;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;

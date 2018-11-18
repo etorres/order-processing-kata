@@ -37,7 +37,7 @@ services:
       - h2:h2.local
       - activemq:activemq.local
     environment:
-      SPRING_PROFILES_ACTIVE: production
+      SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2.local:1521/mem:orders_db;DB_CLOSE_DELAY=-1'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq.local:61616'
   order-placement:
@@ -45,11 +45,14 @@ services:
     image: order-placement:latest
     networks: [order-processing-kata-network]
     depends_on:
+      - h2
       - activemq
     links:
+      - h2:h2.local
       - activemq:activemq.local
     environment:
       SPRING_PROFILES_ACTIVE: 'production'
+      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2.local:1521/mem:orders_db;DB_CLOSE_DELAY=-1'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq.local:61616'
 networks:
   order-processing-kata-network:

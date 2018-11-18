@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders.domain.service;
+package es.eriktorr.katas.orders.domain.services;
 
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;

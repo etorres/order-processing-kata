@@ -2,6 +2,8 @@ package es.eriktorr.katas.orders;
 
 import es.eriktorr.katas.orders.configuration.JmsConfiguration;
 import es.eriktorr.katas.orders.domain.common.Clock;
+import es.eriktorr.katas.orders.domain.services.OrderPlacer;
+import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import es.eriktorr.katas.orders.infrastructure.jms.OrderCreatedEventListener;
 import es.eriktorr.katas.orders.infrastructure.jms.OrderPlacedEventSender;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -41,8 +43,13 @@ public class OrderPlacementApplication {
     }
 
     @Bean
-    OrderCreatedEventListener orderCreatedEventListener(OrderPlacedEventSender orderPlacedEventSender, Clock clock) {
-        return new OrderCreatedEventListener(orderPlacedEventSender, clock);
+    OrderPlacer orderPlacer(EventStoreRepository eventStoreRepository, OrderPlacedEventSender orderPlacedEventSender) {
+        return new OrderPlacer(eventStoreRepository, orderPlacedEventSender);
+    }
+
+    @Bean
+    OrderCreatedEventListener orderCreatedEventListener(OrderPlacer orderPlacer) {
+        return new OrderCreatedEventListener(orderPlacer);
     }
 
 }

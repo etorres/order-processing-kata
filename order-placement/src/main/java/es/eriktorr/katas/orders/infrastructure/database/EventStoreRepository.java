@@ -2,50 +2,41 @@ package es.eriktorr.katas.orders.infrastructure.database;
 
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.Order;
-import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
-import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
+import es.eriktorr.katas.orders.domain.model.OrderPlacedEvent;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import reactor.core.publisher.Mono;
 
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import static es.eriktorr.katas.orders.domain.model.OrderCreatedEvent.ORDER_CREATED_EVENT_HANDLE;
+import static es.eriktorr.katas.orders.domain.model.OrderPlacedEvent.ORDER_PLACED_EVENT_HANDLE;
 import static es.eriktorr.katas.orders.infrastructure.common.EventStorePreparedStatementCreator.preparedStatementFor;
 
 public class EventStoreRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final OrderJsonMapper orderJsonMapper;
     private final Clock clock;
 
-    public EventStoreRepository(JdbcTemplate jdbcTemplate, OrderJsonMapper orderJsonMapper, Clock clock) {
+    public EventStoreRepository(JdbcTemplate jdbcTemplate, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
-        this.orderJsonMapper = orderJsonMapper;
         this.clock = clock;
     }
 
-    public Mono<OrderCreatedEvent> save(Mono<Order> order) {
-        return order.map(this::orderCreatedEventFrom);
-    }
-
-    private OrderCreatedEvent orderCreatedEventFrom(Order order) {
+    public OrderPlacedEvent orderPlacedEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
         val timestamp = clock.currentTimestamp();
         jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
-        return OrderCreatedEvent.build(eventId, timestamp.toLocalDateTime(), order);
+        return OrderPlacedEvent.build(eventId, timestamp.toLocalDateTime(), order);
     }
 
     private PreparedStatementCreator preparedStatementCreatorFor(Order order, Timestamp timestamp) {
         val aggregateId = order.getOrderId();
-        val payload = orderJsonMapper.toJson(order);
-        return connection -> preparedStatementFor(timestamp, ORDER_CREATED_EVENT_HANDLE, aggregateId, payload, connection);
+        return connection -> preparedStatementFor(timestamp, ORDER_PLACED_EVENT_HANDLE, aggregateId, null, connection);
     }
 
     private Map<String, Object> generatedKeys(GeneratedKeyHolder keyHolder) {
