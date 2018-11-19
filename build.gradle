@@ -69,3 +69,9 @@ project(':order-placement') {
         compile project(':common')
     }
 }
+
+project(':order-report') {
+    dependencies {
+        compile project(':common')
+    }
+}
