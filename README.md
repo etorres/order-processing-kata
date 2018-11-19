@@ -4,11 +4,22 @@
 
 `Order Created` >> `Order Placed`
 
-## Build, test and report to SonarQube
+## Build
+
+### Build and test
+
+```text
+gradle test integrationTest
+```
+
+### Build, test and report to SonarQube
 
 ```text
 gradle test integrationTest jacocoMerge sonarqube
 ```
+
+### Test Reports
+Gradle writes XML test reports to build/test-results/test and HTML test reports to build/reports/tests/test.
 
 ## Deploy in Docker
 
@@ -56,7 +67,25 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 
 * [Web on Reactive Stack](https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html).
 * [API specification for the Reactor Core library](https://projectreactor.io/docs/core/release/api/index.html).
+* [WebFlux Security](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-security.html#boot-features-security-webflux).
+* [Spring integration with ActiveMQ](https://docs.spring.io/spring/docs/current/spring-framework-reference/integration.html#jms).
 
 ## Examples
 
 * [Docker+ActiveMQ](https://github.com/daggerok/spring-boot-rest-jms-activemq).
+
+## Test Coverage
+
+* [Merge multi-project test coverage: Gradle + Jacoco + Sonarqube](https://cristian.io/post/sonar-coverage/).
+
+## Spring Boot Security
+
+* [10 Excellent Ways to Secure Your Spring Boot Application](https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot).
+
+## Amazon MQ
+
+* [Tutorial: Connecting a Java Application to Your Amazon MQ Broker](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-connecting-application.html).
+
+* [Connecting to Amazon MQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/connecting-to-amazon-mq.html).
+
+* [Working Examples of Using Java Message Service (JMS) with ActiveMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-working-java-example.html).
