@@ -36,6 +36,10 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 
 ## References
 
+### Project setup
+
+* [Keeping environment variables local to a project directory on the terminal and with IntelliJ](https://medium.com/@tmaslen/keeping-environment-variables-local-to-a-project-directory-on-the-terminal-and-with-intellij-c928c2016599).
+
 ### Command Query Responsibility Segregation and Event Sourcing
 
 * [Really Simple CQRS](https://kalele.io/blog-posts/really-simple-cqrs/).

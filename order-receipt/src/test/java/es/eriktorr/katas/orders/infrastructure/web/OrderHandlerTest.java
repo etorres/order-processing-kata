@@ -34,7 +34,8 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class, properties = {
-        "spring.flyway.locations=filesystem:/Users/etorres/IdeaProjects/order-processing-kata/docker/db/migration"
+        "spring.flyway.enabled=true",
+        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
 class OrderHandlerTest {
 

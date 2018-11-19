@@ -34,7 +34,8 @@ import static org.mockito.BDDMockito.given;
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @SpringBootTest(classes = OrderPlacementApplication.class, properties = {
-        "spring.flyway.locations=filesystem:/Users/etorres/IdeaProjects/order-processing-kata/docker/db/migration"
+        "spring.flyway.enabled=true",
+        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
 class CreatedOrderEventListenerTest {
 

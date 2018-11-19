@@ -18,9 +18,10 @@
 *.ipr
 /out/
 
-### EnvFile plugin ###
+### Environment (will affect CLI tools like direnv, and IntelliJ plugins like EnvFile) ###
 
 .env
+.envrc
 
 ### NetBeans ###
 /nbproject/private/
