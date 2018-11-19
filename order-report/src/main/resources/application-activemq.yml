@@ -1,0 +1,8 @@
+spring.activemq:
+  non-blocking-redelivery: true
+  packages:
+    trust-all: false
+    trusted: es.eriktorr
+  pool:
+    enabled: true
+    max-connections: 10

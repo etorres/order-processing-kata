@@ -34,7 +34,7 @@ public class WebSecurityConfiguration {
                 .matchers(EndpointRequest.to(InfoEndpoint.class, HealthEndpoint.class)).permitAll()
                 .matchers(EndpointRequest.toAnyEndpoint()).hasAuthority(ACTUATOR_ROLE)
                 .pathMatchers(HttpMethod.GET, "/", "/index.html").permitAll()
-                .pathMatchers(HttpMethod.POST, "/stores/**").permitAll()
+                .pathMatchers(HttpMethod.GET, "/stores/**").permitAll()
                 .anyExchange().authenticated().and()
                 .httpBasic().and()
                 .build();
