@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.zalando.problem.Problem;
@@ -26,9 +27,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 @DisplayName("Orders HTTP handler")
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = OrderReportApplication.class, properties = {
-//        "spring.flyway.enabled=true",
-//        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReportApplication.class, properties = {
+        "spring.flyway.enabled=true",
+        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
 class OrderHandlerTest {
 
@@ -84,7 +85,7 @@ class OrderHandlerTest {
                         .withType(URI.create("https://example.org/order-failed"))
                         .withTitle("Unknown Order")
                         .withStatus(Status.NOT_FOUND)
-                        .withDetail(String.format("Order %s is no available", NONEXISTENT_ORDER_ID))
+                        .withDetail(String.format("Order %s is not available", NONEXISTENT_ORDER_ID))
                         .build()
         );
     }

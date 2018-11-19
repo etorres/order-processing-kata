@@ -20,4 +20,8 @@ public class Order implements WithIdentifiableOrder {
     private final
     LocalDateTime createdAt;
 
+    public static final Order INVALID = new Order(
+            new OrderId("-"), new StoreId("-"), new OrderReference("-"), null
+    );
+
 }
