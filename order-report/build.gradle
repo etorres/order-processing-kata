@@ -44,6 +44,7 @@ ext {
 	springCloudVersion = 'Greenwich.M1'
 	problemVersion = '0.22.0'
     awaitilityVersion = '3.1.2'
+	vavrVersion = '0.9.2'
 }
 
 dependencyManagement {
@@ -53,6 +54,8 @@ dependencyManagement {
 }
 
 dependencies {
+	implementation("io.vavr:vavr:${vavrVersion}")
+	
 	implementation('org.springframework.boot:spring-boot-starter-security')
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.springframework.boot:spring-boot-starter-validation')
