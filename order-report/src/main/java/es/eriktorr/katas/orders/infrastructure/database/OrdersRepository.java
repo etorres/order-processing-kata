@@ -1,9 +1,13 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
-import es.eriktorr.katas.orders.domain.model.*;
+import es.eriktorr.katas.orders.domain.model.Order;
+import es.eriktorr.katas.orders.domain.model.OrderId;
+import es.eriktorr.katas.orders.domain.model.OrderReference;
+import es.eriktorr.katas.orders.domain.model.StoreId;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -17,7 +21,8 @@ public class OrdersRepository {
     }
 
     public Mono<Order> findOrderBy(StoreId storeId, OrderId orderId) {
-        return Mono.justOrEmpty(syncFindOrderBy(storeId, orderId));
+        return Mono.defer(() -> Mono.justOrEmpty(syncFindOrderBy(storeId, orderId)))
+                .subscribeOn(Schedulers.elastic());
     }
 
     private Order syncFindOrderBy(StoreId storeId, OrderId orderId) {

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -31,7 +32,8 @@ public class EventStoreRepository {
     }
 
     public Mono<OrderCreatedEvent> save(Mono<Order> order) {
-        return order.map(this::orderCreatedEventFrom);
+        return Mono.defer(() -> order.map(this::orderCreatedEventFrom))
+                .subscribeOn(Schedulers.elastic());
     }
 
     private OrderCreatedEvent orderCreatedEventFrom(Order order) {
