@@ -24,6 +24,9 @@ import static org.springframework.web.reactive.function.server.ServerResponse.st
 
 public class OrderHandler {
 
+    private static final String STORE_ID_ATTRIBUTE = "storeId";
+    private static final String ORDER_ID_ATTRIBUTE = "orderId";
+
     @Value("${order.problem.type.base_url}")
     private String helpBaseUrl;
 
@@ -59,11 +62,11 @@ public class OrderHandler {
     }
 
     private StoreId storeIdFrom(ServerRequest request) {
-        return new StoreId(request.pathVariable("storeId"));
+        return new StoreId(request.pathVariable(STORE_ID_ATTRIBUTE));
     }
 
     private OrderId orderIdFrom(ServerRequest request) {
-        return new OrderId(request.pathVariable("orderId"));
+        return new OrderId(request.pathVariable(ORDER_ID_ATTRIBUTE));
     }
 
     private Problem notFound(StoreId storeId, OrderId orderId) {
@@ -72,8 +75,8 @@ public class OrderHandler {
                 .withTitle("Order Not Found")
                 .withStatus(Status.NOT_FOUND)
                 .withDetail("The order was not found in the specified store")
-                .with("storeId", storeId.getValue())
-                .with("orderId", orderId.getValue())
+                .with(STORE_ID_ATTRIBUTE, storeId.getValue())
+                .with(ORDER_ID_ATTRIBUTE, orderId.getValue())
                 .build();
     }
 
@@ -83,8 +86,8 @@ public class OrderHandler {
                 .withTitle("Order Operation Failed")
                 .withStatus(Status.INTERNAL_SERVER_ERROR)
                 .withDetail("The operation cannot be completed")
-                .with("storeId", storeId.getValue())
-                .with("orderId", orderId.getValue())
+                .with(STORE_ID_ATTRIBUTE, storeId.getValue())
+                .with(ORDER_ID_ATTRIBUTE, orderId.getValue())
                 .with("errorMessage", error.getMessage())
                 .build();
     }
