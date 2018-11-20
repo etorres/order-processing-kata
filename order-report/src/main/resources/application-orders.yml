@@ -1,2 +1,2 @@
 order.placed.event.queue.name: order-placed-event-queue
-order.help.base_url: https://example.org
+order.problem.type.base_url: https://example.org

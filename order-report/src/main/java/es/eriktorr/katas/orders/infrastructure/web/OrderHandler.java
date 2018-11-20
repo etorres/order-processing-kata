@@ -24,7 +24,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.st
 
 public class OrderHandler {
 
-    @Value("${order.help.base_url}")
+    @Value("${order.problem.type.base_url}")
     private String helpBaseUrl;
 
     private final OrderFinder orderFinder;
