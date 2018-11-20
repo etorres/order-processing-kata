@@ -34,8 +34,6 @@ services:
   order-receipt:
     container_name: order-receipt
     image: order-receipt:latest
-    expose:
-      - 8080
     ports:
       - 8080:8080
     networks: [order-processing-kata-network]
@@ -49,6 +47,19 @@ services:
   order-placement:
     container_name: order-placement
     image: order-placement:latest
+    networks: [order-processing-kata-network]
+    depends_on:
+      - h2
+      - activemq
+    environment:
+      SPRING_PROFILES_ACTIVE: 'production'
+      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
+      SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
+  order-report:
+    container_name: order-report
+    image: order-report:latest
+    ports:
+      - 8000:8080
     networks: [order-processing-kata-network]
     depends_on:
       - h2
