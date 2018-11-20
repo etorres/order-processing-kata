@@ -14,10 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -55,6 +52,7 @@ class OrderHandlerTest {
         webTestClient.get().uri("/stores/" + STORE_ID + "/orders/" + ORDER_ID).accept(APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isOk()
+                .expectHeader().contentType(APPLICATION_JSON_UTF8)
                 .expectBody(Order.class).isEqualTo(ORDER);
     }
 
@@ -64,14 +62,13 @@ class OrderHandlerTest {
         webTestClient.get().uri("/stores/" + NONEXISTENT_STORE_ID + "/orders/" + ORDER_ID).accept(APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Problem.class).isEqualTo(
-                        Problem.builder()
-                                .withType(URI.create("https://example.org/order-failed"))
-                                .withTitle("Unknown Store")
-                                .withStatus(Status.NOT_FOUND)
-                                .withDetail(String.format("Store %s is no available", NONEXISTENT_STORE_ID))
-                                .build()
-        );
+                .expectHeader().contentType(APPLICATION_JSON_UTF8)
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("https://example.org/order-not-found")
+                .jsonPath("$.title").isEqualTo("Order Not Found")
+                .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.storeId").isEqualTo(NONEXISTENT_STORE_ID)
+                .jsonPath("$.orderId").isEqualTo(ORDER_ID);
     }
 
     @DisplayName("Nonexistent order will cause error")
@@ -80,14 +77,13 @@ class OrderHandlerTest {
         webTestClient.get().uri("/stores/" + STORE_ID + "/orders/" + NONEXISTENT_ORDER_ID).accept(APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectBody(Problem.class).isEqualTo(
-                Problem.builder()
-                        .withType(URI.create("https://example.org/order-failed"))
-                        .withTitle("Unknown Order")
-                        .withStatus(Status.NOT_FOUND)
-                        .withDetail(String.format("Order %s is not available", NONEXISTENT_ORDER_ID))
-                        .build()
-        );
+                .expectHeader().contentType(APPLICATION_JSON_UTF8)
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("https://example.org/order-not-found")
+                .jsonPath("$.title").isEqualTo("Order Not Found")
+                .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.storeId").isEqualTo(STORE_ID)
+                .jsonPath("$.orderId").isEqualTo(NONEXISTENT_ORDER_ID);
     }
 
 }
