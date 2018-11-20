@@ -49,12 +49,12 @@ public class OrderHandler {
     }
 
     private Mono<ServerResponse> notFoundResponse(StoreId storeId, OrderId orderId) {
-        return status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON_UTF8)
+        return status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8)
                 .body(BodyInserters.fromObject(notFound(storeId, orderId)));
     }
 
     private Mono<ServerResponse> internalServerErrorResponse(Throwable error, StoreId storeId, OrderId orderId) {
-        return status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON_UTF8)
+        return status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8)
                 .body(BodyInserters.fromObject(internalServerError(error, storeId, orderId)));
     }
 

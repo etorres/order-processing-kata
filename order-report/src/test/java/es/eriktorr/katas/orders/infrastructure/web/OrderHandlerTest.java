@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_UTF8;
 
 @Tag("integration")
 @DisplayName("Orders HTTP handler")
@@ -62,7 +63,7 @@ class OrderHandlerTest {
         webTestClient.get().uri("/stores/" + NONEXISTENT_STORE_ID + "/orders/" + ORDER_ID).accept(APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectHeader().contentType(APPLICATION_JSON_UTF8)
+                .expectHeader().contentType(APPLICATION_PROBLEM_JSON_UTF8)
                 .expectBody()
                 .jsonPath("$.type").isEqualTo("https://example.org/order-not-found")
                 .jsonPath("$.title").isEqualTo("Order Not Found")
@@ -77,7 +78,7 @@ class OrderHandlerTest {
         webTestClient.get().uri("/stores/" + STORE_ID + "/orders/" + NONEXISTENT_ORDER_ID).accept(APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isNotFound()
-                .expectHeader().contentType(APPLICATION_JSON_UTF8)
+                .expectHeader().contentType(APPLICATION_PROBLEM_JSON_UTF8)
                 .expectBody()
                 .jsonPath("$.type").isEqualTo("https://example.org/order-not-found")
                 .jsonPath("$.title").isEqualTo("Order Not Found")
