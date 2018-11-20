@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReportApplication.class, properties = {
         "spring.flyway.enabled=true",
-        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
+        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration,classpath:/db/migration"
 })
 class OrderHandlerTest {
 
@@ -43,7 +43,7 @@ class OrderHandlerTest {
             new OrderId(ORDER_ID),
             new StoreId(STORE_ID),
             new OrderReference("7158"),
-            LocalDateTime.parse("2018-11-03T14:48:17.000000242", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+            LocalDateTime.parse("2018-11-03T14:48:17.242", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     );
 
     @Autowired

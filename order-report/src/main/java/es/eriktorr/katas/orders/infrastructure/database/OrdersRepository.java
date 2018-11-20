@@ -19,7 +19,7 @@ public class OrdersRepository {
     }
 
     public Mono<Order> findOrderBy(StoreId storeId, OrderId orderId) {
-        return Mono.fromSupplier(() -> syncFindOrderBy(storeId, orderId));
+        return Mono.justOrEmpty(syncFindOrderBy(storeId, orderId));
     }
 
     private Order syncFindOrderBy(StoreId storeId, OrderId orderId) {
@@ -35,7 +35,7 @@ public class OrdersRepository {
                     )
             );
         } catch (EmptyResultDataAccessException e) {
-            return Order.INVALID;
+            return null;
         }
     }
 

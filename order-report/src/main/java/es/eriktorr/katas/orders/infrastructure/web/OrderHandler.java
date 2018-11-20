@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 import static org.springframework.web.reactive.function.server.ServerResponse.status;
@@ -39,9 +38,9 @@ public class OrderHandler {
         val storeId = storeIdFrom(request);
         val orderId = orderIdFrom(request);
         return orderFinder.findBy(storeId, orderId)
-                .filter(isNotInvalid())
                 .flatMap(okResponse())
-                .switchIfEmpty(notFoundResponse(storeId, orderId));
+                .switchIfEmpty(notFoundResponse(storeId, orderId))
+                .onErrorResume(Throwable.class, error -> internalServerErrorResponse(error, storeId, orderId));
     }
 
     private Function<Order, Mono<ServerResponse>> okResponse() {
@@ -54,8 +53,9 @@ public class OrderHandler {
                 .body(BodyInserters.fromObject(notFound(storeId, orderId)));
     }
 
-    private Predicate<Order> isNotInvalid() {
-        return ((Predicate<Order>) (Order.INVALID::equals)).negate();
+    private Mono<ServerResponse> internalServerErrorResponse(Throwable error, StoreId storeId, OrderId orderId) {
+        return status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON_UTF8)
+                .body(BodyInserters.fromObject(internalServerError(error, storeId, orderId)));
     }
 
     private StoreId storeIdFrom(ServerRequest request) {
@@ -74,6 +74,18 @@ public class OrderHandler {
                 .withDetail("The order was not found in the specified store")
                 .with("storeId", storeId.getValue())
                 .with("orderId", orderId.getValue())
+                .build();
+    }
+
+    private Problem internalServerError(Throwable error, StoreId storeId, OrderId orderId) {
+        return Problem.builder()
+                .withType(URI.create(helpBaseUrl + "/order-failed"))
+                .withTitle("Order Operation Failed")
+                .withStatus(Status.INTERNAL_SERVER_ERROR)
+                .withDetail("The operation cannot be completed")
+                .with("storeId", storeId.getValue())
+                .with("orderId", orderId.getValue())
+                .with("errorMessage", error.getMessage())
                 .build();
     }
 

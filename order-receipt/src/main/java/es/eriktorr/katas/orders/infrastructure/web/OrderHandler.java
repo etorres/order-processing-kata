@@ -58,7 +58,7 @@ public class OrderHandler {
         }
     }
 
-    private Mono<? extends ServerResponse> toBadRequest(ConstraintViolationException exception) {
+    private Mono<ServerResponse> toBadRequest(ConstraintViolationException exception) {
         val errors = exception.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .sorted()

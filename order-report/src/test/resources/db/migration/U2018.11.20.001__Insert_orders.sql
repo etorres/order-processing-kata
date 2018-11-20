@@ -1,0 +1,3 @@
+DELETE FROM orders WHERE id = '4472a477-931e-48b7-8bfb-95daa1ad0216' AND store = '00-396-261';
+
+COMMIT;
