@@ -37,7 +37,7 @@ import static org.mockito.BDDMockito.given;
         "spring.flyway.enabled=true",
         "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
-class CreatedOrderEventListenerTest {
+class OrderCreatedEventListenerTest {
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2018, 11, 11, 12, 27, 34, 897);
     private static final OrderId ORDER_ID = new OrderId("4472a477-931e-48b7-8bfb-95daa1ad0216");
@@ -64,14 +64,14 @@ class CreatedOrderEventListenerTest {
     );
 
     @TestConfiguration
-    static class CreateOrderEventListenerTestConfiguration {
+    static class OrderCreatedEventListenerTestConfiguration {
 
         @Bean
         OrderCreatedEventSender orderCreatedEventSender(
                 JmsTemplate jmsTemplate,
-                @Value("${order.created.event.queue.name}") final String createdOrdersQueueName
+                @Value("${order.created.event.queue.name}") final String orderCreatedQueueName
         ) {
-            return new OrderCreatedEventSender(jmsTemplate, new ActiveMQQueue(createdOrdersQueueName));
+            return new OrderCreatedEventSender(jmsTemplate, new ActiveMQQueue(orderCreatedQueueName));
         }
 
         @Bean

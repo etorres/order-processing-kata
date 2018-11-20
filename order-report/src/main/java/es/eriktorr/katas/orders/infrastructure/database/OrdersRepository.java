@@ -1,13 +1,11 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
-import es.eriktorr.katas.orders.domain.model.Order;
-import es.eriktorr.katas.orders.domain.model.OrderId;
-import es.eriktorr.katas.orders.domain.model.OrderReference;
-import es.eriktorr.katas.orders.domain.model.StoreId;
+import es.eriktorr.katas.orders.domain.model.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import reactor.core.publisher.Mono;
 
+import java.sql.Timestamp;
 import java.sql.Types;
 
 public class OrdersRepository {
@@ -37,6 +35,17 @@ public class OrdersRepository {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public void save(Order order) {
+        jdbcTemplate.update("MERGE INTO orders (id, store, reference, created_at) KEY(id, store) VALUES (?, ?, ?, ?)",
+                new Object[]{
+                        order.getOrderId().getValue(),
+                        order.getStoreId().getValue(),
+                        order.getOrderReference().getValue(),
+                        Timestamp.valueOf(order.getCreatedAt())
+                },
+                new int[]{ Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP });
     }
 
 }

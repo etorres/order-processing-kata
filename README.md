@@ -82,6 +82,11 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 
 * [10 Excellent Ways to Secure Your Spring Boot Application](https://developer.okta.com/blog/2018/07/30/10-ways-to-secure-spring-boot).
 
+## Problem JSON (RFC 7807)
+
+* [Use Problem JSON [176]](https://opensource.zalando.com/restful-api-guidelines/index.html#176).
+* [Open API schema definition of the Problem JSON object](https://opensource.zalando.com/problem/schema.yaml).
+
 ## Amazon MQ
 
 * [Tutorial: Connecting a Java Application to Your Amazon MQ Broker](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-connecting-application.html).

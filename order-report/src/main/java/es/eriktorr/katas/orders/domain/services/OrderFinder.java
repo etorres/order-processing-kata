@@ -14,7 +14,7 @@ public class OrderFinder {
         this.ordersRepository = ordersRepository;
     }
 
-    public Mono<Order> findBy(StoreId storeId, OrderId orderId) {
+    public Mono<Order> findOrderBy(StoreId storeId, OrderId orderId) {
         return ordersRepository.findOrderBy(storeId, orderId);
     }
 

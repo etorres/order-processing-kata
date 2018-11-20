@@ -37,7 +37,7 @@ public class OrderHandler {
     public Mono<ServerResponse> getOrder(ServerRequest request) {
         val storeId = storeIdFrom(request);
         val orderId = orderIdFrom(request);
-        return orderFinder.findBy(storeId, orderId)
+        return orderFinder.findOrderBy(storeId, orderId)
                 .flatMap(okResponse())
                 .switchIfEmpty(notFoundResponse(storeId, orderId))
                 .onErrorResume(Throwable.class, error -> internalServerErrorResponse(error, storeId, orderId));
