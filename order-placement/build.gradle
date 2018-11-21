@@ -53,7 +53,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation("io.vavr:vavr:${vavrVersion}")
+    implementation('io.projectreactor:reactor-core')
 
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jdk8')
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')

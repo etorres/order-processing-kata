@@ -4,7 +4,7 @@ import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderPlacedEvent;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import es.eriktorr.katas.orders.infrastructure.jms.OrderPlacedEventSender;
-import io.vavr.control.Try;
+import reactor.core.publisher.Mono;
 
 public class OrderPlacer {
 
@@ -16,10 +16,9 @@ public class OrderPlacer {
         this.orderPlacedEventSender = orderPlacedEventSender;
     }
 
-    public OrderPlacedEvent place(Order order) {
-        return Try.ofSupplier(() -> eventStoreRepository.orderPlacedEventFrom(order))
-                .onSuccess(orderPlacedEventSender::send)
-                .get();
+    public Mono<OrderPlacedEvent> place(Order order) {
+        return eventStoreRepository.orderPlacedEventFrom(order)
+                .doOnNext(orderPlacedEventSender::send);
     }
 
 }

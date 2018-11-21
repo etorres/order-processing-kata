@@ -7,6 +7,8 @@ import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -26,7 +28,12 @@ public class EventStoreRepository {
         this.clock = clock;
     }
 
-    public OrderPlacedEvent orderPlacedEventFrom(Order order) {
+    public Mono<OrderPlacedEvent> orderPlacedEventFrom(Order order) {
+        return Mono.defer(() -> Mono.just(syncOrderPlacedEventFrom(order)))
+                .subscribeOn(Schedulers.elastic());
+    }
+
+    private OrderPlacedEvent syncOrderPlacedEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
         val timestamp = clock.currentTimestamp();
         jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
