@@ -1,1 +1,2 @@
 order.created.event.queue.name: order-created-event-queue
+order.problem.type.base_url: https://example.org

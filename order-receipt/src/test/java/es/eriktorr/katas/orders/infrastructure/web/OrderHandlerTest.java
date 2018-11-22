@@ -96,7 +96,16 @@ class OrderHandlerTest {
                 .body(fromObject("{}"))
                 .exchange()
                 .expectStatus().isBadRequest()
-                .expectBody().json("{\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Creation date & time is needed, Order reference cannot be blank\"}");
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("https://example.org/invalid-parameters")
+                .jsonPath("$.title").isEqualTo("Invalid Parameters")
+                .jsonPath("$.status").isEqualTo(400)
+                .jsonPath("$.detail").isEqualTo("The request violates one or several constraints")
+                .jsonPath("$.storeId").isEqualTo(STORE_ID)
+                .jsonPath("$.violations[0].field").isEqualTo("createdAt")
+                .jsonPath("$.violations[0].message").isEqualTo("Creation date & time is needed")
+                .jsonPath("$.violations[1].field").isEqualTo("orderReference")
+                .jsonPath("$.violations[1].message").isEqualTo("Order reference cannot be blank");
     }
 
 }

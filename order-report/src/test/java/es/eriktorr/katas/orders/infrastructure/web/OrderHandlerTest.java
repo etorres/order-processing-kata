@@ -83,6 +83,7 @@ class OrderHandlerTest {
                 .jsonPath("$.type").isEqualTo("https://example.org/order-not-found")
                 .jsonPath("$.title").isEqualTo("Order Not Found")
                 .jsonPath("$.status").isEqualTo(404)
+                .jsonPath("$.detail").isEqualTo("The order cannot be found in the specified store")
                 .jsonPath("$.storeId").isEqualTo(STORE_ID)
                 .jsonPath("$.orderId").isEqualTo(NONEXISTENT_ORDER_ID);
     }

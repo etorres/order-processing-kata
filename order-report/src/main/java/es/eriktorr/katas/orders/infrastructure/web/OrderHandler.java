@@ -28,7 +28,7 @@ public class OrderHandler {
     private static final String ORDER_ID_ATTRIBUTE = "orderId";
 
     @Value("${order.problem.type.base_url}")
-    private String helpBaseUrl;
+    private String problemTypeBaseUrl;
 
     private final OrderFinder orderFinder;
 
@@ -71,10 +71,10 @@ public class OrderHandler {
 
     private Problem notFound(StoreId storeId, OrderId orderId) {
         return Problem.builder()
-                .withType(URI.create(helpBaseUrl + "/order-not-found"))
+                .withType(URI.create(problemTypeBaseUrl + "/order-not-found"))
                 .withTitle("Order Not Found")
                 .withStatus(Status.NOT_FOUND)
-                .withDetail("The order was not found in the specified store")
+                .withDetail("The order cannot be found in the specified store")
                 .with(STORE_ID_ATTRIBUTE, storeId.getValue())
                 .with(ORDER_ID_ATTRIBUTE, orderId.getValue())
                 .build();
@@ -82,7 +82,7 @@ public class OrderHandler {
 
     private Problem internalServerError(Throwable error, StoreId storeId, OrderId orderId) {
         return Problem.builder()
-                .withType(URI.create(helpBaseUrl + "/order-failed"))
+                .withType(URI.create(problemTypeBaseUrl + "/order-failed"))
                 .withTitle("Order Operation Failed")
                 .withStatus(Status.INTERNAL_SERVER_ERROR)
                 .withDetail("The operation cannot be completed")
