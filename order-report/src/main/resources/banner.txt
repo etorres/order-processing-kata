@@ -1,0 +1,11 @@
+   ____          _             _____                       _
+  / __ \        | |           |  __ \                     | |
+ | |  | |_ __ __| | ___ _ __  | |__) |___ _ __   ___  _ __| |_
+ | |  | | '__/ _` |/ _ \ '__| |  _  // _ \ '_ \ / _ \| '__| __|
+ | |__| | | | (_| |  __/ |    | | \ \  __/ |_) | (_) | |  | |_
+  \____/|_|  \__,_|\___|_|    |_|  \_\___| .__/ \___/|_|   \__|
+                                         | |
+                                         |_|
+ :: Spring Boot version :: ${spring-boot.version}
+ :: Application name    :: ${spring.application.name}
+ :: Active profiles     :: ${spring.profiles.active}

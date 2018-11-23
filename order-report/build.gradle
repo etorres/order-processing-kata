@@ -54,6 +54,7 @@ dependencyManagement {
 }
 
 dependencies {
+	compileOnly('org.springframework:spring-context-indexer')
 	implementation("io.vavr:vavr:${vavrVersion}")
 	
 	implementation('org.springframework.boot:spring-boot-starter-security')

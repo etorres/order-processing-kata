@@ -53,6 +53,7 @@ dependencyManagement {
 }
 
 dependencies {
+    compileOnly('org.springframework:spring-context-indexer')
     implementation('io.projectreactor:reactor-core')
 
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jdk8')

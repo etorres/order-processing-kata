@@ -41,6 +41,8 @@ services:
       - h2
       - activemq
     environment:
+      JAVA_OPTS: '-noverify -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap'
+      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-h2.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
@@ -52,6 +54,8 @@ services:
       - h2
       - activemq
     environment:
+      JAVA_OPTS: '-noverify -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap'
+      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-h2.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
@@ -65,6 +69,8 @@ services:
       - h2
       - activemq
     environment:
+      JAVA_OPTS: '-noverify -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap'
+      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-h2.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'

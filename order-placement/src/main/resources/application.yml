@@ -1,6 +1,7 @@
 spring:
   application.name: order-placement
   flyway.enabled: false
+  jmx.enabled: false
   profiles.active: test
   profiles.include:
     - activemq
