@@ -1,6 +1,7 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
 import es.eriktorr.katas.orders.domain.common.Clock;
+import es.eriktorr.katas.orders.domain.exceptions.OrderCreatedEventConflictException;
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
@@ -8,6 +9,7 @@ import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -39,9 +41,16 @@ public class EventStoreRepository {
     private OrderCreatedEvent orderCreatedEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
         val timestamp = clock.currentTimestamp();
-        jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
+        val rowsCount = jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
+        failWhenNoRowIsCreated(rowsCount);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
         return OrderCreatedEvent.build(eventId, timestamp.toLocalDateTime(), order);
+    }
+
+    private void failWhenNoRowIsCreated(int rowsCount) {
+        if (rowsCount < 1) {
+            throw new OrderCreatedEventConflictException("cannot create an order created event in the database");
+        }
     }
 
     private PreparedStatementCreator preparedStatementCreatorFor(Order order, Timestamp timestamp) {
@@ -50,7 +59,7 @@ public class EventStoreRepository {
         return connection -> preparedStatementFor(timestamp, ORDER_CREATED_EVENT_HANDLE, aggregateId, payload, connection);
     }
 
-    private Map<String, Object> generatedKeys(GeneratedKeyHolder keyHolder) {
+    private Map<String, Object> generatedKeys(KeyHolder keyHolder) {
         return Optional.ofNullable(keyHolder.getKeys())
                 .orElse(Collections.emptyMap());
     }

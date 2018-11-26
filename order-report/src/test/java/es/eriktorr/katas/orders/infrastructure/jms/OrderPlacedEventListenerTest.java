@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static es.eriktorr.katas.orders.infrastructure.jms.OrderPlacedEventListenerTest.PrimaryConfiguration;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
@@ -29,7 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
 @DisplayName("Placed order event listener")
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(classes = OrderReportApplication.class, properties = {
+@SpringBootTest(classes = { OrderReportApplication.class, PrimaryConfiguration.class }, properties = {
         "spring.flyway.enabled=true",
         "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
@@ -55,7 +56,7 @@ class OrderPlacedEventListenerTest {
     );
 
     @TestConfiguration
-    static class OrderPlacedEventListenerTestConfiguration {
+    static class PrimaryConfiguration {
         @Bean
         OrderPlacedEventSender orderPlacedEventSender(
                 JmsTemplate jmsTemplate,

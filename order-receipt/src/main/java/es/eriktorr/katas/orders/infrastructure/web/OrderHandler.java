@@ -1,5 +1,6 @@
 package es.eriktorr.katas.orders.infrastructure.web;
 
+import es.eriktorr.katas.orders.domain.exceptions.OrderCreatedEventConflictException;
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
@@ -55,6 +56,7 @@ public class OrderHandler {
                 .compose(orderReceiver::save)
                 .flatMap(okResponse())
                 .onErrorResume(ConstraintViolationException.class, error -> badRequestResponse(error, storeId))
+                .onErrorResume(OrderCreatedEventConflictException.class, error -> conflictRequestResponse(error, storeId))
                 .onErrorResume(Throwable.class, error -> internalServerErrorResponse(error, storeId));
     }
 
@@ -67,20 +69,14 @@ public class OrderHandler {
                 .body(BodyInserters.fromObject(badRequest(exception, storeId)));
     }
 
+    private Mono<ServerResponse> conflictRequestResponse(OrderCreatedEventConflictException exception, StoreId storeId) {
+        return status(HttpStatus.CONFLICT).contentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8)
+                .body(BodyInserters.fromObject(conflict(exception, storeId)));
+    }
+
     private Mono<ServerResponse> internalServerErrorResponse(Throwable error, StoreId storeId) {
         return status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_PROBLEM_JSON_UTF8)
                 .body(BodyInserters.fromObject(internalServerError(error, storeId)));
-    }
-
-    private Problem internalServerError(Throwable error, StoreId storeId) {
-        return Problem.builder()
-                .withType(URI.create(problemTypeBaseUrl + "/order-failed"))
-                .withTitle("Order Operation Failed")
-                .withStatus(Status.INTERNAL_SERVER_ERROR)
-                .withDetail("The operation cannot be completed")
-                .with(STORE_ID_ATTRIBUTE, storeId.getValue())
-                .with("errorMessage", error.getMessage())
-                .build();
     }
 
     private Problem badRequest(ConstraintViolationException exception, StoreId storeId) {
@@ -95,6 +91,29 @@ public class OrderHandler {
                 .withDetail("The request violates one or several constraints")
                 .with(STORE_ID_ATTRIBUTE, storeId.getValue())
                 .with("violations", violations)
+                .build();
+    }
+
+    private Problem conflict(OrderCreatedEventConflictException exception, StoreId storeId) {
+        return Problem.builder()
+                .withType(URI.create(problemTypeBaseUrl + "/conflict"))
+                .withTitle("Request conflicted with the order's state")
+                .withStatus(Status.CONFLICT)
+                .withDetail("The request could not be completed due to a conflict with the current state of the target order. "
+                        + "Conflicts are most likely to occur when there is a duplicate order created by an earlier request.")
+                .with(STORE_ID_ATTRIBUTE, storeId.getValue())
+                .with("errorMessage", exception.getMessage())
+                .build();
+    }
+
+    private Problem internalServerError(Throwable error, StoreId storeId) {
+        return Problem.builder()
+                .withType(URI.create(problemTypeBaseUrl + "/order-failed"))
+                .withTitle("Order Operation Failed")
+                .withStatus(Status.INTERNAL_SERVER_ERROR)
+                .withDetail("The operation cannot be completed")
+                .with(STORE_ID_ATTRIBUTE, storeId.getValue())
+                .with("errorMessage", error.getMessage())
                 .build();
     }
 

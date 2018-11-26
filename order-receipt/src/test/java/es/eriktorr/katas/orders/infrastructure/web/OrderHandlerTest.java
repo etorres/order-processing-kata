@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -22,10 +21,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
+import static es.eriktorr.katas.orders.infrastructure.web.OrderHandlerTest.PrimaryConfiguration;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
@@ -33,7 +34,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @DisplayName("Orders HTTP handler")
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class, properties = {
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = { OrderReceiptApplication.class, PrimaryConfiguration.class }, properties = {
         "spring.flyway.enabled=true",
         "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
@@ -49,10 +50,14 @@ class OrderHandlerTest {
     private static final Order ORDER = new Order(ORDER_ID, new StoreId(STORE_ID), new OrderReference(ORDER_REFERENCE), LOCAL_DATE_TIME);
 
     private static final Timestamp TIMESTAMP = Timestamp.valueOf(LOCAL_DATE_TIME.plus(1673L, ChronoUnit.MILLIS));
-    private static final OrderCreatedEvent ORDER_CREATED_EVENT = OrderCreatedEvent.build(1L, TIMESTAMP.toLocalDateTime(), ORDER);
+    private static final OrderCreatedEvent ORDER_CREATED_EVENT = OrderCreatedEvent.build(Long.MIN_VALUE, TIMESTAMP.toLocalDateTime(), ORDER);
+
+    private static final OrderId DUPLICATE_ORDER_ID_1 = new OrderId("10593d3e-7fce-40f1-9155-1f8dbb74a27e");
+    private static final OrderId DUPLICATE_ORDER_ID_2 = new OrderId("9763ad60-76ce-45cc-b597-5858352a49da");
+    private static final Timestamp DUPLICATE_TIMESTAMP = Timestamp.valueOf(LOCAL_DATE_TIME.plus(8041L, ChronoUnit.MILLIS));
 
     @TestConfiguration
-    static class OrderHandlerTestConfiguration {
+    static class PrimaryConfiguration {
         @Bean
         OrderCreatedEventListener createOrderListener() {
             return new OrderCreatedEventListener();
@@ -106,6 +111,27 @@ class OrderHandlerTest {
                 .jsonPath("$.violations[0].message").isEqualTo("Creation date & time is needed")
                 .jsonPath("$.violations[1].field").isEqualTo("orderReference")
                 .jsonPath("$.violations[1].message").isEqualTo("Order reference cannot be blank");
+    }
+
+    @DisplayName("Handle duplicate orders")
+    @Test void
+    fail_to_create_an_order_with_duplicate_reference_in_the_same_store() {
+        given(orderIdGenerator.nextOrderId()).willReturn(DUPLICATE_ORDER_ID_1, DUPLICATE_ORDER_ID_2);
+        given(clock.currentTimestamp()).willReturn(TIMESTAMP, DUPLICATE_TIMESTAMP);
+
+        webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
+                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + DUPLICATE_ORDER_ID_1)
+                .expectBody().isEmpty();
+
+        webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
+                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + DUPLICATE_ORDER_ID_1)
+                .expectBody().isEmpty();
     }
 
 }

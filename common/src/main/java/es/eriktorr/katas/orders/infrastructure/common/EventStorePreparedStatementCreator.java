@@ -16,13 +16,18 @@ public final class EventStorePreparedStatementCreator {
             Timestamp timestamp, String handle, SingleValue aggregateId, String payload, Connection connection
     ) throws SQLException {
         val preparedStatement = connection.prepareStatement(
-                "INSERT INTO event_store (timestamp, handle, aggregate_id, payload) VALUES (?, ?, ?, ?)",
+                "INSERT INTO event_store (timestamp, handle, aggregate_id, payload) " +
+                "SELECT ? AS timestamp, ? AS handle, ? AS aggregate_id, ? AS payload FROM DUAL " +
+                "WHERE NOT EXISTS (SELECT aggregate_id, handle FROM event_store WHERE aggregate_id = ? AND handle = ?)",
                 Statement.RETURN_GENERATED_KEYS
         );
+        val aggregateIdValue = aggregateId.getValue();
         preparedStatement.setTimestamp(1, timestamp);
         preparedStatement.setString(2, handle);
-        preparedStatement.setString(3, aggregateId.getValue());
+        preparedStatement.setString(3, aggregateIdValue);
         preparedStatement.setClob(4, new SerialClob(trimJsonToEmpty(payload)));
+        preparedStatement.setString(5, aggregateIdValue);
+        preparedStatement.setString(6, handle);
         return preparedStatement;
     }
 

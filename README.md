@@ -4,6 +4,10 @@
 
 `Order Created` >> `Order Placed`
 
+## Event Store
+
+The event store is a log that can be implemented in an append-only table. For instance, PostgreSQL supports [declarative partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html), and [table inheritance](https://www.postgresql.org/docs/current/ddl-inherit.html) for partitioning in situations where declarative partitioning falls short.
+
 ## Build
 
 ### Build and test
@@ -94,3 +98,11 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 * [Connecting to Amazon MQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/connecting-to-amazon-mq.html).
 
 * [Working Examples of Using Java Message Service (JMS) with ActiveMQ](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/amazon-mq-working-java-example.html).
+
+## Table Partitioning in PostgreSQL
+
+* [How to scale PostgreSQL 10 using table inheritance and declarative partitioning](https://blog.timescale.com/scaling-partitioning-data-postgresql-10-explained-cd48a712a9a1).
+
+## JSON Support in PostgreSQL
+
+* [Unleash the Power of Storing JSON in Postgres](https://blog.codeship.com/unleash-the-power-of-storing-json-in-postgres/).
