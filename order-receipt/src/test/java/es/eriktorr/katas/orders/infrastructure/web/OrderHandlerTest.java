@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -77,8 +78,8 @@ class OrderHandlerTest {
     private Clock clock;
 
     @DisplayName("Create a new order")
-	@Test void
-	create_a_new_order() {
+    @Test void
+    create_a_new_order() {
         given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
         given(clock.currentTimestamp()).willReturn(TIMESTAMP);
 
@@ -90,7 +91,7 @@ class OrderHandlerTest {
                 .expectBody().isEmpty();
 
         await().atMost(10L, SECONDS).until(() -> orderCreatedEventListener.eventReceived(ORDER_CREATED_EVENT), equalTo(true));
-	}
+    }
 
     @DisplayName("Invalid input parameters will cause error")
     @Test void
@@ -129,9 +130,15 @@ class OrderHandlerTest {
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
                 .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + DUPLICATE_ORDER_ID_1)
-                .expectBody().isEmpty();
+                .expectStatus().isEqualTo(HttpStatus.CONFLICT)
+                .expectBody()
+                .jsonPath("$.type").isEqualTo("https://example.org/conflict")
+                .jsonPath("$.title").isEqualTo("Request conflicted with the order's state")
+                .jsonPath("$.status").isEqualTo(409)
+                .jsonPath("$.detail").isEqualTo("The request could not be completed due to a conflict with the current state of the target order. " +
+                "Conflicts are most likely to occur when there is a duplicate order created by an earlier request.")
+                .jsonPath("$.storeId").isEqualTo(STORE_ID)
+                .jsonPath("$.errorMessage").isEqualTo("cannot create an order created event in the database");
     }
 
 }
