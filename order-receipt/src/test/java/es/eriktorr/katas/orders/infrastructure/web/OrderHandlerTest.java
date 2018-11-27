@@ -4,7 +4,7 @@ import es.eriktorr.katas.orders.OrderReceiptApplication;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.*;
 import es.eriktorr.katas.orders.infrastructure.web.utils.OrderCreatedEventListener;
-import es.eriktorr.katas.orders.test.TruncateDataExtension;
+import es.eriktorr.katas.orders.test.TruncateOrderReceiptData;
 import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -40,10 +40,9 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = { OrderReceiptApplication.class, PrimaryConfiguration.class }, properties = {
         "spring.flyway.enabled=true",
-        "spring.flyway.schemas=test_order_receipt",
         "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
-@ExtendWith(TruncateDataExtension.class)
+@ExtendWith(TruncateOrderReceiptData.class)
 class OrderHandlerTest {
 
     private static final String STORE_ID = "00-396-261";

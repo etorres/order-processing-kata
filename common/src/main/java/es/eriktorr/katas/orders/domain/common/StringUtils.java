@@ -8,7 +8,7 @@ import java.util.Optional;
  */
 public final class StringUtils {
 
-    private static final String EMPTY_JSON = "{}";
+    public static final String EMPTY_JSON = "{}";
 
     private StringUtils() {}
 

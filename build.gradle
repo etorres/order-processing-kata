@@ -61,17 +61,20 @@ subprojects {
 project(':order-receipt') {
     dependencies {
         compile project(':common')
+        testCompile project(':order-test')
     }
 }
 
 project(':order-placement') {
     dependencies {
         compile project(':common')
+        testCompile project(':order-test')
     }
 }
 
 project(':order-report') {
     dependencies {
         compile project(':common')
+        testCompile project(':order-test')
     }
 }

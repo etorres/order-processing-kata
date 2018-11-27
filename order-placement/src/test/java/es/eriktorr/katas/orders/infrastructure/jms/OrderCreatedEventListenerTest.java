@@ -6,10 +6,12 @@ import es.eriktorr.katas.orders.domain.events.DomainEventMetadata;
 import es.eriktorr.katas.orders.domain.model.*;
 import es.eriktorr.katas.orders.infrastructure.jms.utils.OrderCreatedEventSender;
 import es.eriktorr.katas.orders.infrastructure.jms.utils.OrderPlacedEventListener;
+import es.eriktorr.katas.orders.test.TruncateOrderPlacementData;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -38,6 +40,7 @@ import static org.mockito.BDDMockito.given;
         "spring.flyway.enabled=true",
         "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
+@ExtendWith(TruncateOrderPlacementData.class)
 class OrderCreatedEventListenerTest {
 
     private static final LocalDateTime CREATED_AT = LocalDateTime.of(2018, 11, 11, 12, 27, 34, 897);

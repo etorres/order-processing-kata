@@ -7,9 +7,13 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-public class TruncateDataExtension implements AfterAllCallback {
+public abstract class TruncateDataExtension implements AfterAllCallback {
 
-    private static final String DATASOURCE_URL = "jdbc:postgresql://localhost:5432/orders_db?currentSchema=test_order_receipt";
+    private final String datasourceUrl;
+
+    protected TruncateDataExtension(String datasourceUrl) {
+        this.datasourceUrl = datasourceUrl;
+    }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
@@ -17,7 +21,7 @@ public class TruncateDataExtension implements AfterAllCallback {
         properties.setProperty("user", "postgres");
         properties.setProperty("password", System.getenv("POSTGRES_ROOT_PASSWORD"));
         try (
-                val connection = DriverManager.getConnection(DATASOURCE_URL, properties);
+                val connection = DriverManager.getConnection(datasourceUrl, properties);
                 val statement = connection.createStatement()
         ) {
             statement.executeUpdate("TRUNCATE orders RESTART IDENTITY CASCADE");

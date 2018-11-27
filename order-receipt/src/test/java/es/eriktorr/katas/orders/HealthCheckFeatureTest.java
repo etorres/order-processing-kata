@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.Base64Utils;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @Tag("integration")
 @DisplayName("Health check feature")
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = OrderReceiptApplication.class, properties = {
+@SpringBootTest(webEnvironment = RANDOM_PORT, classes = OrderReceiptApplication.class, properties = {
         "spring.security.user.name=user",
         "spring.security.user.password=password"
 })

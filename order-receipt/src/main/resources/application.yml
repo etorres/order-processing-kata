@@ -13,7 +13,7 @@ spring:
 spring:
   profiles: test
   datasource:
-    url: jdbc:postgresql://localhost:5432/orders_db?currentSchema=test_order_receipt
+    url: jdbc:postgresql://localhost:5432/test_order_receipt
   activemq:
     broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
     pool.idle-timeout: 0s
