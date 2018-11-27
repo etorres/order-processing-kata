@@ -40,7 +40,7 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = { OrderReceiptApplication.class, PrimaryConfiguration.class }, properties = {
         "spring.flyway.enabled=true",
         "spring.flyway.schemas=test_order_receipt",
-        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration,classpath:/db/migration"
+        "spring.flyway.locations=filesystem:${TEST_PROJECT_HOME:-/tmp}/docker/db/migration"
 })
 @ExtendWith(TruncateDataExtension.class)
 class OrderHandlerTest {
