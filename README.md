@@ -8,6 +8,14 @@
 
 The event store is a log that can be implemented in an append-only table. For instance, PostgreSQL supports [declarative partitioning](https://www.postgresql.org/docs/current/ddl-partitioning.html), and [table inheritance](https://www.postgresql.org/docs/current/ddl-inherit.html) for partitioning in situations where declarative partitioning falls short.
 
+## Duplicate event handling
+
+At most once handling is built into the domain model.
+
+If multiple messages have the same business semantics, then the consumers will reject duplicates themselves.
+
+Therefore, any given consumer can use the semantics of the message to eliminate duplicates.
+
 ## Build
 
 ### Build and test

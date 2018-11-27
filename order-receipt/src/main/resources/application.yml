@@ -5,7 +5,7 @@ spring:
   profiles.active: test
   profiles.include:
     - activemq
-    - h2
+    - postgres
     - jms
     - management
     - orders
@@ -13,7 +13,7 @@ spring:
 spring:
   profiles: test
   datasource:
-    url: jdbc:h2:mem:orders_db;DB_CLOSE_DELAY=-1
+    url: jdbc:postgresql://localhost:5432/orders_db?currentSchema=test_order_receipt
   activemq:
     broker-url: vm://embedded?broker.persistent=false,useShutdownHook=false
     pool.idle-timeout: 0s
@@ -21,9 +21,9 @@ spring:
 spring:
   profiles: production
   datasource:
-    url: jdbc:h2:tcp://localhost:1521/mem:orders_db;DB_CLOSE_DELAY=-1
+    url: jdbc:postgresql://postgres:5432/orders_db
   activemq:
     user: admin
     password: password
     in-memory: false
-    broker-url: tcp://localhost:61616
+    broker-url: tcp://activemq:61616

@@ -8,23 +8,45 @@ services:
     ports:
       - 8161:8161
     networks: [order-processing-kata-network]
-  h2:
-    container_name: h2
-    image: oscarfonts/h2:alpine
+  postgres:
+    container_name: postgres
+    image: postgres:11.1-alpine
+    restart: always
     expose:
-      - 1521
+      - 5432
     ports:
-      - 8081:81
+      - 5432:5432
     networks: [order-processing-kata-network]
+    environment:
+      POSTGRES_INITDB_ARGS: "--locale=en_US --encoding=UTF8"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
+      POSTGRES_DB: orders_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    networks: [order-processing-kata-network]
+    environment:
+      ADMINER_DESIGN: flat
+    depends_on:
+      - postgres
   flyway:
     container_name: flyway
-    image: boxfuse/flyway:5.2.1-alpine
-    command: -url=jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db -user=sa -password=sa migrate
+    image: boxfuse/flyway:5.2.3-alpine
+    command: -url=jdbc:postgresql://postgres:5432/orders_db -user=postgres -password=${POSTGRES_ROOT_PASSWORD} migrate
     volumes:
       - ./db/migration:/flyway/sql
     networks: [order-processing-kata-network]
     depends_on:
-      - h2
+      - postgres
   order-receipt:
     container_name: order-receipt
     image: order-receipt:latest
@@ -32,26 +54,26 @@ services:
       - 8080:8080
     networks: [order-processing-kata-network]
     depends_on:
-      - h2
+      - postgres
       - activemq
     environment:
       JAVA_OPTS: '-noverify -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap'
-      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-h2.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
+      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-postgres.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
-      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
   order-placement:
     container_name: order-placement
     image: order-placement:latest
     networks: [order-processing-kata-network]
     depends_on:
-      - h2
+      - postgres
       - activemq
     environment:
       JAVA_OPTS: '-noverify -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap'
-      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-h2.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-orders.yml'
+      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-postgres.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
-      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
   order-report:
     container_name: order-report
@@ -60,13 +82,13 @@ services:
       - 8000:8080
     networks: [order-processing-kata-network]
     depends_on:
-      - h2
+      - postgres
       - activemq
     environment:
       JAVA_OPTS: '-noverify -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap'
-      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-h2.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
+      SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-postgres.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
-      SPRING_DATASOURCE_URL: 'jdbc:h2:tcp://h2:1521/opt/h2-data/orders_db;DB_CLOSE_DELAY=-1'
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
 networks:
   order-processing-kata-network:

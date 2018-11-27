@@ -12,10 +12,9 @@ public final class StringUtils {
 
     private StringUtils() {}
 
-    public static char[] trimJsonToEmpty(String payload) {
+    public static String trimJsonToEmpty(String payload) {
         return Optional.ofNullable(trimToNull(payload))
-                .orElse(EMPTY_JSON)
-                .toCharArray();
+                .orElse(EMPTY_JSON);
     }
 
     private static String trimToNull(final String string) {

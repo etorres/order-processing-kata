@@ -1,9 +1,9 @@
 CREATE TABLE event_store (
-  event_id BIGINT AUTO_INCREMENT NOT NULL,
+  event_id BIGSERIAL NOT NULL,
   timestamp TIMESTAMP NOT NULL,
   handle VARCHAR(64) NOT NULL,
   aggregate_id VARCHAR(64) NOT NULL,
-  payload CLOB NOT NULL,
+  payload JSONB NOT NULL,
   PRIMARY KEY (event_id)
 );
 
