@@ -1,13 +1,11 @@
 package es.eriktorr.katas.orders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import es.eriktorr.katas.orders.configuration.WebSecurityConfiguration;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.OrderIdGenerator;
 import es.eriktorr.katas.orders.domain.services.OrderReceiver;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import es.eriktorr.katas.orders.infrastructure.jms.OrderCreatedEventSender;
-import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -52,11 +50,6 @@ public class OrderReceiptApplication {
     @Bean
     OrderReceiver orderReceiver(EventStoreRepository eventStoreRepository, OrderCreatedEventSender orderCreatedEventSender) {
         return new OrderReceiver(eventStoreRepository, orderCreatedEventSender);
-    }
-
-    @Bean
-    OrderJsonMapper orderJsonMapper(ObjectMapper objectMapper) {
-        return new OrderJsonMapper(objectMapper);
     }
 
 }

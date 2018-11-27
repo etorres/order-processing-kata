@@ -5,6 +5,7 @@ import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.model.*;
 import es.eriktorr.katas.orders.infrastructure.web.utils.OrderCreatedEventListener;
 import es.eriktorr.katas.orders.test.TruncateDataExtension;
+import lombok.val;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -50,16 +51,7 @@ class OrderHandlerTest {
     private static final String CREATED_AT = "2018-11-03T14:48:17.000000242";
 
     private static final LocalDateTime LOCAL_DATE_TIME = LocalDateTime.parse(CREATED_AT, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
     private static final OrderId ORDER_ID = new OrderId("4472a477-931e-48b7-8bfb-95daa1ad0216");
-    private static final Order ORDER = new Order(ORDER_ID, new StoreId(STORE_ID), new OrderReference(ORDER_REFERENCE), LOCAL_DATE_TIME);
-
-    private static final Timestamp TIMESTAMP = Timestamp.valueOf(LOCAL_DATE_TIME.plus(1673L, ChronoUnit.MILLIS));
-    private static final OrderCreatedEvent ORDER_CREATED_EVENT = OrderCreatedEvent.build(Long.MIN_VALUE, TIMESTAMP.toLocalDateTime(), ORDER);
-
-    private static final OrderId DUPLICATE_ORDER_ID_1 = new OrderId("10593d3e-7fce-40f1-9155-1f8dbb74a27e");
-    private static final OrderId DUPLICATE_ORDER_ID_2 = new OrderId("9763ad60-76ce-45cc-b597-5858352a49da");
-    private static final Timestamp DUPLICATE_TIMESTAMP = Timestamp.valueOf(LOCAL_DATE_TIME.plus(8041L, ChronoUnit.MILLIS));
 
     @TestConfiguration
     static class PrimaryConfiguration {
@@ -84,8 +76,12 @@ class OrderHandlerTest {
     @DisplayName("Create a new order")
     @Test void
     create_a_new_order() {
+        val timestamp = Timestamp.valueOf(LOCAL_DATE_TIME.plus(1673L, ChronoUnit.MILLIS));
+        val order = new Order(ORDER_ID, new StoreId(STORE_ID), new OrderReference(ORDER_REFERENCE), LOCAL_DATE_TIME);
+        val orderCreatedEvent = OrderCreatedEvent.build(Long.MIN_VALUE, timestamp.toLocalDateTime(), order);
+
         given(orderIdGenerator.nextOrderId()).willReturn(ORDER_ID);
-        given(clock.currentTimestamp()).willReturn(TIMESTAMP);
+        given(clock.currentTimestamp()).willReturn(timestamp);
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
                 .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
@@ -94,7 +90,7 @@ class OrderHandlerTest {
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
 
-        await().atMost(10L, SECONDS).until(() -> orderCreatedEventListener.eventReceived(ORDER_CREATED_EVENT), equalTo(true));
+        await().atMost(10L, SECONDS).until(() -> orderCreatedEventListener.eventReceived(orderCreatedEvent), equalTo(true));
     }
 
     @DisplayName("Invalid input parameters will cause error")
@@ -121,18 +117,24 @@ class OrderHandlerTest {
     @DisplayName("Handle duplicate orders")
     @Test void
     fail_to_create_an_order_with_duplicate_reference_in_the_same_store() {
-        given(orderIdGenerator.nextOrderId()).willReturn(DUPLICATE_ORDER_ID_1, DUPLICATE_ORDER_ID_2);
-        given(clock.currentTimestamp()).willReturn(TIMESTAMP, DUPLICATE_TIMESTAMP);
+        val orderId_1 = new OrderId("10593d3e-7fce-40f1-9155-1f8dbb74a27e");
+        val orderId_2 = new OrderId("9763ad60-76ce-45cc-b597-5858352a49da");
+
+        val reference = "9666";
+        val timestamp = Timestamp.valueOf(LOCAL_DATE_TIME.plus(8041L, ChronoUnit.MILLIS));
+
+        given(orderIdGenerator.nextOrderId()).willReturn(orderId_1, orderId_2);
+        given(clock.currentTimestamp()).willReturn(timestamp, timestamp);
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
-                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
+                .body(fromObject("{\"reference\":\"" + reference + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
                 .exchange()
                 .expectStatus().isCreated()
-                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + DUPLICATE_ORDER_ID_1)
+                .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + orderId_1)
                 .expectBody().isEmpty();
 
         webTestClient.post().uri("/stores/" + STORE_ID + "/orders").contentType(APPLICATION_JSON_UTF8)
-                .body(fromObject("{\"reference\":\"" + ORDER_REFERENCE + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
+                .body(fromObject("{\"reference\":\"" + reference + "\",\"createdAt\":\"" + CREATED_AT + "\"}"))
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.CONFLICT)
                 .expectBody()

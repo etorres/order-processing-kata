@@ -1,10 +1,10 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.exceptions.OrderCreatedEventConflictException;
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
-import es.eriktorr.katas.orders.infrastructure.json.OrderJsonMapper;
 import lombok.val;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -24,12 +24,12 @@ import static es.eriktorr.katas.orders.infrastructure.common.EventStorePreparedS
 public class EventStoreRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final OrderJsonMapper orderJsonMapper;
+    private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    public EventStoreRepository(JdbcTemplate jdbcTemplate, OrderJsonMapper orderJsonMapper, Clock clock) {
+    public EventStoreRepository(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
-        this.orderJsonMapper = orderJsonMapper;
+        this.objectMapper = objectMapper;
         this.clock = clock;
     }
 
@@ -55,8 +55,11 @@ public class EventStoreRepository {
 
     private PreparedStatementCreator preparedStatementCreatorFor(Order order, Timestamp timestamp) {
         val aggregateId = order.getOrderId();
-        val payload = orderJsonMapper.toJson(order);
-        return connection -> preparedStatementFor(timestamp, ORDER_CREATED_EVENT_HANDLE, aggregateId, payload, connection);
+        return connection -> preparedStatementFor(
+                timestamp, ORDER_CREATED_EVENT_HANDLE, aggregateId,
+                order.getStoreId(), order.getOrderReference(),
+                order, Order.class,
+                objectMapper, connection);
     }
 
     private Map<String, Object> generatedKeys(KeyHolder keyHolder) {

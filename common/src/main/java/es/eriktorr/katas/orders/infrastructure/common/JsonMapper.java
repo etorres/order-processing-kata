@@ -1,17 +1,36 @@
 package es.eriktorr.katas.orders.infrastructure.common;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class JsonMapper<T> {
+import java.io.IOException;
 
-    protected final ObjectMapper objectMapper;
+public final class JsonMapper<T> {
 
-    protected JsonMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper.copy();
+    private final Class<T> valueType;
+    private final ObjectMapper objectMapper;
+
+    JsonMapper(Class<T> valueType, ObjectMapper objectMapper) {
+        this.valueType = valueType;
+        this.objectMapper = objectMapper;
     }
 
-    public abstract String toJson(T object);
+    String toJson(T object) {
+        if (object == null) return null;
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("failed to serialize object to JSON: " + object, e);
+        }
+    }
 
-    public abstract T fromJson(String payload);
+    public T fromJson(String payload) {
+        if (payload == null) return null;
+        try {
+            return objectMapper.readValue(payload, valueType);
+        } catch (IOException e) {
+            throw new IllegalStateException("failed to deserialize payload: " + payload, e);
+        }
+    }
 
 }

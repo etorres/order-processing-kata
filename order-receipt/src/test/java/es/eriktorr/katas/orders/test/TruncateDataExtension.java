@@ -22,7 +22,9 @@ public class TruncateDataExtension implements AfterAllCallback {
         ) {
             statement.executeUpdate("TRUNCATE orders RESTART IDENTITY CASCADE");
             statement.executeUpdate("TRUNCATE event_store RESTART IDENTITY CASCADE");
-            connection.commit();
+            if (!connection.getAutoCommit()) {
+                connection.commit();
+            }
         }
     }
 
