@@ -54,12 +54,7 @@ public class EventStoreRepository {
     }
 
     private PreparedStatementCreator preparedStatementCreatorFor(Order order, Timestamp timestamp) {
-        val aggregateId = order.getOrderId();
-        return connection -> preparedStatementFor(
-                timestamp, ORDER_CREATED_EVENT_HANDLE, aggregateId,
-                order.getStoreId(), order.getOrderReference(),
-                order, Order.class,
-                objectMapper, connection);
+        return connection -> preparedStatementFor(timestamp, ORDER_CREATED_EVENT_HANDLE, order, Order.class, objectMapper, connection);
     }
 
     private Map<String, Object> generatedKeys(KeyHolder keyHolder) {

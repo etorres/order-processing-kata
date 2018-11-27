@@ -1,6 +1,6 @@
 package es.eriktorr.katas.orders.infrastructure.web.utils;
 
-import es.eriktorr.katas.orders.domain.common.DomainEventMetadata;
+import es.eriktorr.katas.orders.domain.events.DomainEventMetadata;
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import es.eriktorr.katas.orders.domain.model.OrderId;

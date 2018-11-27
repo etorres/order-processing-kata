@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-public final class JsonMapper<T> {
+class JsonMapper<T> {
 
     private final Class<T> valueType;
     private final ObjectMapper objectMapper;
@@ -24,7 +24,7 @@ public final class JsonMapper<T> {
         }
     }
 
-    public T fromJson(String payload) {
+    T fromJson(String payload) {
         if (payload == null) return null;
         try {
             return objectMapper.readValue(payload, valueType);

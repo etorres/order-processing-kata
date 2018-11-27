@@ -1,7 +1,7 @@
 package es.eriktorr.katas.orders.infrastructure.jms;
 
 import es.eriktorr.katas.orders.OrderReportApplication;
-import es.eriktorr.katas.orders.domain.common.DomainEventMetadata;
+import es.eriktorr.katas.orders.domain.events.DomainEventMetadata;
 import es.eriktorr.katas.orders.domain.model.*;
 import es.eriktorr.katas.orders.infrastructure.database.OrdersRepository;
 import org.apache.activemq.command.ActiveMQQueue;

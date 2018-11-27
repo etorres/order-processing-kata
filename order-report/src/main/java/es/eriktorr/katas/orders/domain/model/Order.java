@@ -1,6 +1,5 @@
 package es.eriktorr.katas.orders.domain.model;
 
-import es.eriktorr.katas.orders.domain.common.WithIdentifiableOrder;
 import lombok.Value;
 
 import java.time.LocalDateTime;

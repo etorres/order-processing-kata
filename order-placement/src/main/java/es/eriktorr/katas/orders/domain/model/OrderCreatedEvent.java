@@ -1,7 +1,7 @@
 package es.eriktorr.katas.orders.domain.model;
 
-import es.eriktorr.katas.orders.domain.common.DomainEvent;
-import es.eriktorr.katas.orders.domain.common.DomainEventMetadata;
+import es.eriktorr.katas.orders.domain.events.DomainEvent;
+import es.eriktorr.katas.orders.domain.events.DomainEventMetadata;
 import lombok.Value;
 
 @Value

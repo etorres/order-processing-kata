@@ -2,6 +2,7 @@ package es.eriktorr.katas.orders.infrastructure.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.eriktorr.katas.orders.domain.common.SingleValue;
+import es.eriktorr.katas.orders.domain.model.WithOrderInformation;
 import lombok.val;
 
 import java.sql.*;
@@ -12,26 +13,28 @@ public final class EventStorePreparedStatementCreator {
 
     private EventStorePreparedStatementCreator() {}
 
-    public static <T> PreparedStatement preparedStatementFor(
-            Timestamp timestamp, String handle, SingleValue aggregateId,
-            SingleValue store, SingleValue reference,
-            T value, Class<T> valueType,
-            ObjectMapper objectMapper, Connection connection
+    public static <T extends WithOrderInformation> PreparedStatement preparedStatementFor(
+            Timestamp timestamp, String handle, T value, Class<T> valueType, ObjectMapper objectMapper, Connection connection
     ) throws SQLException {
         val preparedStatement = connection.prepareStatement(
                 "INSERT INTO event_store (timestamp, handle, aggregate_id, payload) " +
-                "SELECT ? AS timestamp, ? AS handle, ? AS aggregate_id, ?::JSONB AS payload " +
-                "WHERE NOT EXISTS (SELECT aggregate_id, handle FROM event_store WHERE payload->>'store' = ? AND payload->>'reference' = ?)",
+                        "SELECT ? AS timestamp, ? AS handle, ? AS aggregate_id, ?::JSONB AS payload " +
+                        "WHERE NOT EXISTS " +
+                        "(SELECT aggregate_id, handle FROM event_store WHERE payload->>'store' = ? AND payload->>'reference' = ?)",
                 Statement.RETURN_GENERATED_KEYS
         );
-        val payload = new JsonMapper<>(valueType, objectMapper).toJson(value);
         preparedStatement.setTimestamp(1, timestamp);
         preparedStatement.setString(2, handle);
-        preparedStatement.setString(3, aggregateId.getValue());
-        preparedStatement.setObject(4, trimJsonToEmpty(payload));
-        preparedStatement.setString(5, store.getValue());
-        preparedStatement.setString(6, reference.getValue());
+        preparedStatement.setString(3, value.getOrderId().getValue());
+        preparedStatement.setObject(4, payloadFrom(value, valueType, objectMapper));
+        preparedStatement.setString(5, value.getStoreId().getValue());
+        preparedStatement.setString(6, value.getOrderReference().getValue());
         return preparedStatement;
+    }
+
+    private static <T> String payloadFrom(T value, Class<T> valueType, ObjectMapper objectMapper) {
+        val payload = new JsonMapper<>(valueType, objectMapper).toJson(value);
+        return trimJsonToEmpty(payload);
     }
 
     public static PreparedStatement preparedStatementFor(
