@@ -1,4 +1,4 @@
-package es.eriktorr.katas.orders.infrastructure.common;
+package es.eriktorr.katas.orders.infrastructure.json;
 
 public class OrderFields {
 

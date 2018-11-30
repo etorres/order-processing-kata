@@ -114,3 +114,7 @@ curl -X POST -H "Content-Type: application/json" -d '{"reference":"7158","create
 ## JSON Support in PostgreSQL
 
 * [Unleash the Power of Storing JSON in Postgres](https://blog.codeship.com/unleash-the-power-of-storing-json-in-postgres/).
+
+## Locks in PostgreSQL
+
+* [When Postgres blocks: 7 tips for dealing with locks](https://www.citusdata.com/blog/2018/02/22/seven-tips-for-dealing-with-postgres-locks/).

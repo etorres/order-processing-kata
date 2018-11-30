@@ -7,6 +7,7 @@ import es.eriktorr.katas.orders.domain.model.*;
 import es.eriktorr.katas.orders.infrastructure.jms.utils.OrderCreatedEventSender;
 import es.eriktorr.katas.orders.infrastructure.jms.utils.OrderPlacedEventListener;
 import es.eriktorr.katas.orders.test.TruncateOrderPlacementData;
+import lombok.val;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -64,7 +65,7 @@ class OrderCreatedEventListenerTest {
     private static final LocalDateTime PROCESSED_AT = CREATED_AT.plus(984L, ChronoUnit.MILLIS);
 
     private static final OrderPlacedEvent ORDER_PLACED_EVENT = OrderPlacedEvent.build(
-            1L, PROCESSED_AT, ORDER
+            Long.MIN_VALUE, PROCESSED_AT, ORDER
     );
 
     @TestConfiguration
@@ -100,6 +101,39 @@ class OrderCreatedEventListenerTest {
         orderCreatedEventSender.send(ORDER_CREATED_EVENT);
 
         await().atMost(10L, SECONDS).until(() -> orderPlacedEventListener.eventReceived(ORDER_PLACED_EVENT), equalTo(true));
+    }
+
+    @DisplayName("Handle duplicate order created events")
+    @Test void
+    ignore_an_order_with_duplicate_reference_in_the_same_store() {
+        val timestamp = Timestamp.valueOf(PROCESSED_AT);
+        val orderId = new OrderId("5e1e8a3a-ad1b-46f1-aa94-d0b1d562e087");
+        val order = new Order(
+                orderId,
+                new StoreId("00-396-261"),
+                new OrderReference("4478"),
+                CREATED_AT
+        );
+        val orderCreatedEvent = new OrderCreatedEvent(
+                15L,
+                new DomainEventMetadata(CREATED_AT.plus(183L, ChronoUnit.MILLIS), 1),
+                "order.created",
+                orderId,
+                order
+        );
+
+        given(clock.currentTimestamp()).willReturn(timestamp, timestamp);
+
+        orderCreatedEventSender.send(orderCreatedEvent);
+        orderCreatedEventSender.send(orderCreatedEvent);
+
+        // TODO
+
+        try {
+            Thread.sleep(2000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

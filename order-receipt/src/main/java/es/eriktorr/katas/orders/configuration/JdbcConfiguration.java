@@ -3,6 +3,7 @@ package es.eriktorr.katas.orders.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
 import es.eriktorr.katas.orders.domain.common.Clock;
+import es.eriktorr.katas.orders.infrastructure.database.EventStorePreparedStatementCreator;
 import es.eriktorr.katas.orders.infrastructure.database.EventStoreRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +28,13 @@ public class JdbcConfiguration {
     }
 
     @Bean
-    EventStoreRepository eventStoreRepository(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, Clock clock) {
-        return new EventStoreRepository(jdbcTemplate, objectMapper, clock);
+    EventStorePreparedStatementCreator eventStorePreparedStatementCreator(ObjectMapper objectMapper) {
+        return new EventStorePreparedStatementCreator(objectMapper);
+    }
+
+    @Bean
+    EventStoreRepository eventStoreRepository(JdbcTemplate jdbcTemplate, EventStorePreparedStatementCreator eventStorePreparedStatementCreator, Clock clock) {
+        return new EventStoreRepository(jdbcTemplate, eventStorePreparedStatementCreator, clock);
     }
 
 }

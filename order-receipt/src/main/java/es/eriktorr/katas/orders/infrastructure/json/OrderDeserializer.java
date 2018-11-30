@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static es.eriktorr.katas.orders.infrastructure.common.OrderFields.*;
+import static es.eriktorr.katas.orders.infrastructure.json.OrderFields.*;
 
 public class OrderDeserializer extends StdDeserializer<Order> {
 

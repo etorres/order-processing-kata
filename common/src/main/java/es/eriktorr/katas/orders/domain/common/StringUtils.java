@@ -8,7 +8,7 @@ import java.util.Optional;
  */
 public final class StringUtils {
 
-    public static final String EMPTY_JSON = "{}";
+    private static final String EMPTY_JSON = "{}";
 
     private StringUtils() {}
 
@@ -22,7 +22,7 @@ public final class StringUtils {
         return isEmpty(trimmedString) ? null : trimmedString;
     }
 
-    private static String trim(final String string) {
+    public static String trim(final String string) {
         return string == null ? null : string.trim();
     }
 

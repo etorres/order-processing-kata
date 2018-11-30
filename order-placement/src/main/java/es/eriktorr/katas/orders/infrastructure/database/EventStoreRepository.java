@@ -1,9 +1,11 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
 import es.eriktorr.katas.orders.domain.common.Clock;
+import es.eriktorr.katas.orders.domain.exceptions.OrderPlacedEventConflictException;
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderPlacedEvent;
 import lombok.val;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,15 +18,18 @@ import java.util.Map;
 import java.util.Optional;
 
 import static es.eriktorr.katas.orders.domain.model.OrderPlacedEvent.ORDER_PLACED_EVENT_HANDLE;
-import static es.eriktorr.katas.orders.infrastructure.common.EventStorePreparedStatementCreator.preparedStatementFor;
 
 public class EventStoreRepository {
 
+    private static final int ORDER_PLACED_EVENT_DISCRIMINATOR = 2;
+
     private final JdbcTemplate jdbcTemplate;
+    private final EventStorePreparedStatementCreator eventStorePreparedStatementCreator;
     private final Clock clock;
 
-    public EventStoreRepository(JdbcTemplate jdbcTemplate, Clock clock) {
+    public EventStoreRepository(JdbcTemplate jdbcTemplate, EventStorePreparedStatementCreator eventStorePreparedStatementCreator, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
+        this.eventStorePreparedStatementCreator = eventStorePreparedStatementCreator;
         this.clock = clock;
     }
 
@@ -36,14 +41,29 @@ public class EventStoreRepository {
     private OrderPlacedEvent syncOrderPlacedEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
         val timestamp = clock.currentTimestamp();
-        jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
+        val rowsCount = new JdbcTemplateAdvisoryLock(jdbcTemplate, ORDER_PLACED_EVENT_DISCRIMINATOR).execute(() -> {
+            try {
+                jdbcTemplate.queryForObject("SELECT aggregate_id FROM event_store WHERE handle = ? AND aggregate_id = ? LIMIT 1",
+                        new Object[]{ ORDER_PLACED_EVENT_HANDLE, order.getOrderId().getValue() }, String.class);
+                return 0;
+            } catch (EmptyResultDataAccessException exception) {
+                return jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
+            }
+        });
+        failWhenNoRowIsCreated(rowsCount);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
         return OrderPlacedEvent.build(eventId, timestamp.toLocalDateTime(), order);
     }
 
+    private void failWhenNoRowIsCreated(int rowsCount) {
+        if (rowsCount < 1) {
+            throw new OrderPlacedEventConflictException("cannot create an order placed event in the database");
+        }
+    }
+
     private PreparedStatementCreator preparedStatementCreatorFor(Order order, Timestamp timestamp) {
         val aggregateId = order.getOrderId();
-        return connection -> preparedStatementFor(timestamp, ORDER_PLACED_EVENT_HANDLE, aggregateId, connection);
+        return connection -> eventStorePreparedStatementCreator.preparedStatementFor(timestamp, ORDER_PLACED_EVENT_HANDLE, aggregateId, connection);
     }
 
     private Map<String, Object> generatedKeys(GeneratedKeyHolder keyHolder) {

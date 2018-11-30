@@ -1,6 +1,5 @@
 package es.eriktorr.katas.orders.infrastructure.database;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import es.eriktorr.katas.orders.domain.common.Clock;
 import es.eriktorr.katas.orders.domain.exceptions.OrderCreatedEventConflictException;
 import es.eriktorr.katas.orders.domain.model.Order;
@@ -19,17 +18,16 @@ import java.util.Map;
 import java.util.Optional;
 
 import static es.eriktorr.katas.orders.domain.model.OrderCreatedEvent.ORDER_CREATED_EVENT_HANDLE;
-import static es.eriktorr.katas.orders.infrastructure.common.EventStorePreparedStatementCreator.preparedStatementFor;
 
 public class EventStoreRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper;
+    private final EventStorePreparedStatementCreator eventStorePreparedStatementCreator;
     private final Clock clock;
 
-    public EventStoreRepository(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, Clock clock) {
+    public EventStoreRepository(JdbcTemplate jdbcTemplate, EventStorePreparedStatementCreator eventStorePreparedStatementCreator, Clock clock) {
         this.jdbcTemplate = jdbcTemplate;
-        this.objectMapper = objectMapper;
+        this.eventStorePreparedStatementCreator = eventStorePreparedStatementCreator;
         this.clock = clock;
     }
 
@@ -41,7 +39,14 @@ public class EventStoreRepository {
     private OrderCreatedEvent orderCreatedEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
         val timestamp = clock.currentTimestamp();
-        val rowsCount = jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
+
+
+        // TODO
+        val rowsCount = new JdbcTemplateAdvisoryLock(jdbcTemplate, 1)
+                .execute(() -> jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder));
+        // TODO
+
+
         failWhenNoRowIsCreated(rowsCount);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
         return OrderCreatedEvent.build(eventId, timestamp.toLocalDateTime(), order);
@@ -54,7 +59,7 @@ public class EventStoreRepository {
     }
 
     private PreparedStatementCreator preparedStatementCreatorFor(Order order, Timestamp timestamp) {
-        return connection -> preparedStatementFor(timestamp, ORDER_CREATED_EVENT_HANDLE, order, Order.class, objectMapper, connection);
+        return connection -> eventStorePreparedStatementCreator.preparedStatementFor(timestamp, ORDER_CREATED_EVENT_HANDLE, order, connection);
     }
 
     private Map<String, Object> generatedKeys(KeyHolder keyHolder) {

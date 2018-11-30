@@ -8,8 +8,7 @@ CREATE TABLE event_store (
 );
 
 CREATE INDEX event_store_timestamp_idx ON event_store(timestamp);
-CREATE INDEX event_store_handle_idx ON event_store(handle);
-CREATE INDEX event_store_aggregate_idx ON event_store(aggregate_id);
+CREATE INDEX event_store_handle_aggregate_idx ON event_store(handle, aggregate_id);
 CREATE INDEX event_store_payload_idx ON event_store USING GIN ((payload->'store'), (payload->'reference'));
 
 CREATE TABLE orders (

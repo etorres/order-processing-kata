@@ -1,21 +1,19 @@
-package es.eriktorr.katas.orders.infrastructure.common;
+package es.eriktorr.katas.orders.infrastructure.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-class JsonMapper<T> {
+public class JsonMapper<T> {
 
-    private final Class<T> valueType;
     private final ObjectMapper objectMapper;
 
-    JsonMapper(Class<T> valueType, ObjectMapper objectMapper) {
-        this.valueType = valueType;
+    public JsonMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    String toJson(T object) {
+    public String toJson(T object) {
         if (object == null) return null;
         try {
             return objectMapper.writeValueAsString(object);
@@ -24,7 +22,7 @@ class JsonMapper<T> {
         }
     }
 
-    T fromJson(String payload) {
+    public T fromJson(String payload, Class<T> valueType) {
         if (payload == null) return null;
         try {
             return objectMapper.readValue(payload, valueType);

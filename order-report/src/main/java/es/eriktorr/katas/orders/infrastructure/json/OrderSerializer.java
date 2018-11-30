@@ -8,7 +8,7 @@ import es.eriktorr.katas.orders.domain.model.Order;
 
 import java.io.IOException;
 
-import static es.eriktorr.katas.orders.infrastructure.common.OrderFields.*;
+import static es.eriktorr.katas.orders.infrastructure.json.OrderFields.*;
 import static org.springframework.util.StringUtils.trimWhitespace;
 
 public class OrderSerializer extends StdSerializer<Order> {

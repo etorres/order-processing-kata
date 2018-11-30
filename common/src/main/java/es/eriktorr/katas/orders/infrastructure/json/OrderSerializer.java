@@ -4,21 +4,21 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import es.eriktorr.katas.orders.domain.common.SingleValue;
-import es.eriktorr.katas.orders.domain.model.Order;
+import es.eriktorr.katas.orders.domain.model.WithOrderInformation;
 
 import java.io.IOException;
 
-import static es.eriktorr.katas.orders.infrastructure.common.OrderFields.*;
-import static org.springframework.util.StringUtils.trimWhitespace;
+import static es.eriktorr.katas.orders.domain.common.StringUtils.trim;
+import static es.eriktorr.katas.orders.infrastructure.json.OrderFields.*;
 
-public class OrderSerializer extends StdSerializer<Order> {
+public class OrderSerializer<T extends WithOrderInformation> extends StdSerializer<T> {
 
-    public OrderSerializer() {
-        super(Order.class);
+    public OrderSerializer(Class<T> handleType) {
+        super(handleType);
     }
 
     @Override
-    public void serialize(Order order, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
+    public void serialize(T order, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
         jsonGenerator.writeStartObject();
         writeOptional(jsonGenerator, ORDER_ID_FIELD, order.getOrderId());
         writeOptional(jsonGenerator, ORDER_STORE_FIELD, order.getStoreId());
@@ -27,15 +27,15 @@ public class OrderSerializer extends StdSerializer<Order> {
         jsonGenerator.writeEndObject();
     }
 
-    private <T extends SingleValue> void writeOptional(JsonGenerator jsonGenerator, String field, T singleValue) throws IOException {
+    private <V extends SingleValue> void writeOptional(JsonGenerator jsonGenerator, String field, V singleValue) throws IOException {
         if (singleValue == null) return;
-        final String trimmedValue = trimWhitespace(singleValue.getValue());
+        final String trimmedValue = trim(singleValue.getValue());
         if (!"".equals(trimmedValue)) {
             jsonGenerator.writeStringField(field, trimmedValue);
         }
     }
 
-    private <T> void writeOptional(JsonGenerator jsonGenerator, String field, T object) throws IOException {
+    private <V> void writeOptional(JsonGenerator jsonGenerator, String field, V object) throws IOException {
         if (object != null) {
             jsonGenerator.writeObjectField(field, object);
         }
