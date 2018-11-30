@@ -21,19 +21,12 @@ public final class EventStorePreparedStatementCreator {
     <T extends WithOrderInformation> PreparedStatement preparedStatementFor(
             Timestamp timestamp, String handle, T value, Connection connection
     ) throws SQLException {
-        val preparedStatement = connection.prepareStatement(
-                "INSERT INTO event_store (timestamp, handle, aggregate_id, payload) " +
-                        "SELECT ? AS timestamp, ? AS handle, ? AS aggregate_id, ?::JSONB AS payload " +
-                        "WHERE NOT EXISTS " +
-                        "(SELECT handle, aggregate_id FROM event_store WHERE payload->>'store' = ? AND payload->>'reference' = ?)",
-                Statement.RETURN_GENERATED_KEYS
-        );
+        val preparedStatement = connection.prepareStatement("INSERT INTO event_store (timestamp, handle, aggregate_id, payload) VALUES (?, ?, ?, ?::JSONB)",
+                Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setTimestamp(1, timestamp);
         preparedStatement.setString(2, handle);
         preparedStatement.setString(3, value.getOrderId().getValue());
         preparedStatement.setObject(4, payloadFrom(value, objectMapper));
-        preparedStatement.setString(5, value.getStoreId().getValue());
-        preparedStatement.setString(6, value.getOrderReference().getValue());
         return preparedStatement;
     }
 

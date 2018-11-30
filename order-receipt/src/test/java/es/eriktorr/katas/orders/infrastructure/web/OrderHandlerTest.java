@@ -27,8 +27,8 @@ import java.time.temporal.ChronoUnit;
 
 import static es.eriktorr.katas.orders.infrastructure.web.OrderHandlerTest.PrimaryConfiguration;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -89,7 +89,7 @@ class OrderHandlerTest {
                 .expectHeader().valueEquals("Location", "/stores/" + STORE_ID + "/orders/" + ORDER_ID)
                 .expectBody().isEmpty();
 
-        await().atMost(10L, SECONDS).until(() -> orderCreatedEventListener.eventReceived(orderCreatedEvent), equalTo(true));
+        await().atMost(10L, SECONDS).untilAsserted(() -> assertThat(orderCreatedEventListener.eventReceived(orderCreatedEvent)).isTrue());
     }
 
     @DisplayName("Invalid input parameters will cause error")

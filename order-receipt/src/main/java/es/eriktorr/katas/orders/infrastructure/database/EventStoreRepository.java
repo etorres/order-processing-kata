@@ -5,6 +5,7 @@ import es.eriktorr.katas.orders.domain.exceptions.OrderCreatedEventConflictExcep
 import es.eriktorr.katas.orders.domain.model.Order;
 import es.eriktorr.katas.orders.domain.model.OrderCreatedEvent;
 import lombok.val;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,6 +21,8 @@ import java.util.Optional;
 import static es.eriktorr.katas.orders.domain.model.OrderCreatedEvent.ORDER_CREATED_EVENT_HANDLE;
 
 public class EventStoreRepository {
+
+    private static final int ORDER_CREATED_EVENT_DISCRIMINATOR = 1;
 
     private final JdbcTemplate jdbcTemplate;
     private final EventStorePreparedStatementCreator eventStorePreparedStatementCreator;
@@ -39,14 +42,15 @@ public class EventStoreRepository {
     private OrderCreatedEvent orderCreatedEventFrom(Order order) {
         val keyHolder = new GeneratedKeyHolder();
         val timestamp = clock.currentTimestamp();
-
-
-        // TODO
-        val rowsCount = new JdbcTemplateAdvisoryLock(jdbcTemplate, 1)
-                .execute(() -> jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder));
-        // TODO
-
-
+        val rowsCount = new JdbcTemplateAdvisoryLock(jdbcTemplate, ORDER_CREATED_EVENT_DISCRIMINATOR).execute(() -> {
+            try {
+                jdbcTemplate.queryForObject("SELECT aggregate_id FROM event_store WHERE payload->>'store' = ? AND payload->>'reference' = ?",
+                        new Object[]{ order.getStoreId().getValue(), order.getOrderReference().getValue() }, String.class);
+                return 0;
+            } catch (EmptyResultDataAccessException exception) {
+                return jdbcTemplate.update(preparedStatementCreatorFor(order, timestamp), keyHolder);
+            }
+        });
         failWhenNoRowIsCreated(rowsCount);
         val eventId = eventIdOrError(generatedKeys(keyHolder));
         return OrderCreatedEvent.build(eventId, timestamp.toLocalDateTime(), order);
