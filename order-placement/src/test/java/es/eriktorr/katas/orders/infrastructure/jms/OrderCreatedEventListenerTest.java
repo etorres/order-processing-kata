@@ -29,8 +29,9 @@ import java.time.temporal.ChronoUnit;
 
 import static es.eriktorr.katas.orders.infrastructure.jms.OrderCreatedEventListenerTest.PrimaryConfiguration;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.equalTo;
+import static org.awaitility.Awaitility.with;
 import static org.mockito.BDDMockito.given;
 
 @Tag("integration")
@@ -100,7 +101,7 @@ class OrderCreatedEventListenerTest {
 
         orderCreatedEventSender.send(ORDER_CREATED_EVENT);
 
-        await().atMost(10L, SECONDS).until(() -> orderPlacedEventListener.eventReceived(ORDER_PLACED_EVENT), equalTo(true));
+        await().atMost(10L, SECONDS).untilAsserted(() -> assertThat(orderPlacedEventListener.eventReceived(ORDER_PLACED_EVENT)).isTrue());
     }
 
     @DisplayName("Handle duplicate order created events")
@@ -121,19 +122,18 @@ class OrderCreatedEventListenerTest {
                 orderId,
                 order
         );
+        val orderPlacedEvent = OrderPlacedEvent.build(
+                Long.MAX_VALUE, PROCESSED_AT, order
+        );
 
         given(clock.currentTimestamp()).willReturn(timestamp, timestamp);
 
         orderCreatedEventSender.send(orderCreatedEvent);
         orderCreatedEventSender.send(orderCreatedEvent);
 
-        // TODO
-
-        try {
-            Thread.sleep(2000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        with().pollDelay(2L, SECONDS)
+                .and().atMost(10L, SECONDS)
+                .untilAsserted(() -> assertThat(orderPlacedEventListener.onlyReceived(orderPlacedEvent)).isTrue());
     }
 
 }

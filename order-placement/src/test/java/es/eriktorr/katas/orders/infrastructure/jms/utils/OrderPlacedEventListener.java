@@ -39,6 +39,10 @@ public class OrderPlacedEventListener {
         );
     }
 
+    public boolean onlyReceived(OrderPlacedEvent orderPlacedEvent) {
+        return EVENTS.size() == 1 && eventReceived(orderPlacedEvent);
+    }
+
     private static Predicate<OrderPlacedEvent> hasMetadata(DomainEventMetadata metadata) {
         return event -> event.getMetadata().equals(metadata);
     }
