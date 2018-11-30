@@ -1,0 +1,3 @@
+spring.datasource:
+  username: postgres
+  password: ${POSTGRES_ROOT_PASSWORD}

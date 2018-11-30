@@ -43,14 +43,17 @@ public class OrdersRepository {
     }
 
     public void save(Order order) {
-        jdbcTemplate.update("MERGE INTO orders (id, store, reference, created_at) KEY(id, store) VALUES (?, ?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO orders (id, store, reference, created_at) VALUES (?, ?, ?, ?) " +
+                        "ON CONFLICT (id, store) DO UPDATE SET reference = ?, created_at = ?",
                 new Object[]{
                         order.getOrderId().getValue(),
                         order.getStoreId().getValue(),
                         order.getOrderReference().getValue(),
+                        Timestamp.valueOf(order.getCreatedAt()),
+                        order.getOrderReference().getValue(),
                         Timestamp.valueOf(order.getCreatedAt())
                 },
-                new int[]{ Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP });
+                new int[]{ Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.TIMESTAMP, Types.VARCHAR, Types.TIMESTAMP });
     }
 
 }

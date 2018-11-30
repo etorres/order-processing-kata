@@ -5,7 +5,7 @@ import lombok.Value;
 import java.time.LocalDateTime;
 
 @Value
-public class Order implements WithIdentifiableOrder {
+public class Order implements WithOrderInformation {
 
     private final
     OrderId orderId;
