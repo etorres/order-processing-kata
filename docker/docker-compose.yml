@@ -61,6 +61,7 @@ services:
       SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-postgres.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
   order-placement:
     container_name: order-placement
@@ -74,6 +75,7 @@ services:
       SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-postgres.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
   order-report:
     container_name: order-report
@@ -89,6 +91,7 @@ services:
       SPRING_CONFIG_LOCATION: 'file:///app/resources/application.yml,file:///app/resources/application-activemq.yml,file:///app/resources/application-postgres.yml,file:///app/resources/application-jms.yml,file:///app/resources/application-management.yml,file:///app/resources/application-orders.yml'
       SPRING_PROFILES_ACTIVE: 'production'
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
 networks:
   order-processing-kata-network:
