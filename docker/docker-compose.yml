@@ -105,6 +105,14 @@ services:
       - order-receipt
 #      - order-placement
 #      - order-report
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks: [order-processing-kata-network]
+    depends_on:
+      - prometheus
 networks:
   order-processing-kata-network:
     driver: bridge
