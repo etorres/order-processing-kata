@@ -1,3 +1,5 @@
-spring.datasource:
-  username: postgres
-  password: ${POSTGRES_ROOT_PASSWORD}
+spring:
+  flyway.enabled: false
+  datasource:
+    username: postgres
+    password: ${POSTGRES_ROOT_PASSWORD}

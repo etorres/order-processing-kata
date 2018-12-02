@@ -1,8 +1,11 @@
-spring.security.user:
-  name: admin
-  password: s3C4E7
+spring:
+  jmx.enabled: false
+  security.user:
+    name: admin
+    password: s3C4E7
 management:
   endpoints.web:
     base-path: /management
-    exposure.include: health,info,metrics,mappings,caches
+    exposure.include: health,info,metrics,mappings,caches,prometheus
   endpoint.health.show-details: WHEN_AUTHORIZED
+  endpoint.prometheus.cache.time-to-live: 3s

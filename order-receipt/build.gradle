@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.1.0.RELEASE'
+		springBootVersion = '2.1.1.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -56,8 +56,10 @@ dependencies {
 	compileOnly('org.springframework:spring-context-indexer')
 	
 	implementation('org.springframework.boot:spring-boot-starter-security')
-	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.springframework.boot:spring-boot-starter-validation')
+
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    runtimeOnly('io.micrometer:micrometer-registry-prometheus')
     
     implementation('org.springframework.cloud:spring-cloud-starter-sleuth')
 

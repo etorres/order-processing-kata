@@ -93,6 +93,18 @@ services:
       SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/orders_db'
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_ROOT_PASSWORD}
       SPRING_ACTIVEMQ_BROKER_URL: 'tcp://activemq:61616'
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    networks: [order-processing-kata-network]
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+    depends_on:
+      - order-receipt
+#      - order-placement
+#      - order-report
 networks:
   order-processing-kata-network:
     driver: bridge

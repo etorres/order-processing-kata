@@ -1,7 +1,5 @@
 spring:
   application.name: order-receipt
-  flyway.enabled: false
-  jmx.enabled: false
   profiles.active: test
   profiles.include:
     - activemq
