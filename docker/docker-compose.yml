@@ -103,8 +103,8 @@ services:
       - ./prometheus:/etc/prometheus:ro
     depends_on:
       - order-receipt
-#      - order-placement
-#      - order-report
+      - order-placement
+      - order-report
   grafana:
     container_name: grafana
     image: grafana/grafana
