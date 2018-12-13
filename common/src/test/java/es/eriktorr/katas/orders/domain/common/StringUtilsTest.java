@@ -27,7 +27,7 @@ class StringUtilsTest {
                 new SimpleImmutableEntry<>("    {  abc }    ", "{  abc }")
         ).map(sampleCase -> dynamicTest(String.format("trimJsonToEmpty(%s)=%s", sampleCase.getKey(), sampleCase.getValue()), () -> {
             val trimmedJsonPayload = trimJsonToEmpty(sampleCase.getKey());
-            assertThat(trimmedJsonPayload).isEqualTo(sampleCase.getValue().toCharArray());
+            assertThat(trimmedJsonPayload).isEqualTo(sampleCase.getValue());
         }));
     }
 
