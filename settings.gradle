@@ -1,3 +1,3 @@
 rootProject.name = 'order-processing-kata'
 
-include 'common', 'order-test', 'event-store', 'order-receipt', 'order-placement', 'order-report'
+include 'common', 'order-test', 'order-receipt', 'order-placement', 'order-report'

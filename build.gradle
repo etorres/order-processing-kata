@@ -58,13 +58,6 @@ subprojects {
     }
 }
 
-project(':event-store') {
-    dependencies {
-        compile project(':common')
-        testCompile project(':order-test')
-    }
-}
-
 project(':order-receipt') {
     dependencies {
         compile project(':common')
