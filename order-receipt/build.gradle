@@ -44,6 +44,7 @@ ext {
 	springCloudVersion = 'Greenwich.RC1'
 	problemVersion = '0.22.0'
     awaitilityVersion = '3.1.5'
+    cucumberVersion = '4.2.0'
 }
 
 dependencyManagement {
@@ -79,15 +80,25 @@ dependencies {
 		exclude group: 'junit', module: 'junit'
 	}
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine') {
+        because 'allows JUnit 5 tests to run'
+    }
     testImplementation 'org.mockito:mockito-junit-jupiter'
 
-	testImplementation("org.awaitility:awaitility:${awaitilityVersion}")
+    testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
+        because 'allows JUnit 3 and JUnit 4 tests to run'
+    }
+    testCompileOnly 'junit:junit'
+    testImplementation "io.cucumber:cucumber-java8:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
+
+    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
 }
 
 test {
     useJUnitPlatform {
         excludeTags 'integration', 'regression'
+        excludeEngines 'junit-vintage'
     }
     testLogging {
 		events 'passed', 'skipped', 'failed'
