@@ -85,14 +85,20 @@ dependencies {
     }
     testImplementation 'org.mockito:mockito-junit-jupiter'
 
+    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
+
+    // Workaround to run Cucumber tests in JUnit 5
+    // There is no official support for Cucumber in JUnit 5: https://github.com/cucumber/cucumber-jvm/issues/1149
+    // Example of JUnit 5 with multiple engines: https://github.com/junit-team/junit5-samples/blob/master/junit5-multiple-engines/build.gradle
+    testRuntimeOnly('org.junit.platform:junit-platform-console') {
+        because 'needed to launch the JUnit Platform Console program'
+    }
     testRuntimeOnly('org.junit.vintage:junit-vintage-engine') {
         because 'allows JUnit 3 and JUnit 4 tests to run'
     }
     testCompileOnly 'junit:junit'
     testImplementation "io.cucumber:cucumber-java8:${cucumberVersion}"
     testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
-
-    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
 }
 
 test {
@@ -109,9 +115,24 @@ test {
 task integrationTest(type: Test) {
 	useJUnitPlatform {
         includeTags 'integration', 'regression'
+        excludeEngines 'junit-vintage'
     }
     testLogging {
 		events 'passed', 'skipped', 'failed'
 	}
     failFast = true
+}
+
+// Workaround to run JUnit 4 tests (i.e Cucumber) from the console
+task regressionTest(type: JavaExec) {
+    // JUnit 5 integration relies on engine specifics: https://github.com/gradle/gradle/issues/4912
+    dependsOn testClasses
+    def reportsDir = file("$buildDir/test-results")
+    outputs.dir reportsDir
+    classpath sourceSets.test.runtimeClasspath
+    main 'org.junit.platform.console.ConsoleLauncher'
+    args '--exclude-engine', 'junit-jupiter'
+    args '--scan-classpath'
+    args '--details', 'tree'
+    args '--reports-dir', reportsDir
 }

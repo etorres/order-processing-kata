@@ -20,8 +20,20 @@ Therefore, any given consumer can use the semantics of the message to eliminate 
 
 ### Build and test
 
+Please, use `docker-compose -f docker/docker-compose.yml up postgres adminer flyway` to spin up the database, then run the test like this:
+
 ```text
 gradle test integrationTest
+```
+
+#### Regression tests with Cucumber
+
+We decided to put regression tests in the same repository as `order-receipt` microservice. The reasoning behind this decision is that `order-receipt` contains the behaviour the client is interested in. The fact that `order-placement` and `order-report` are called in an specific order is an implementation detail from the point of view of the client.
+
+Please, use `docker-compose -f docker/docker-compose.yml up postgres adminer flyway` to spin up the environment (database + microservices), then run the test like this:
+
+```text
+gradle order-receipt:regressionTest
 ```
 
 ### Build, test and report to SonarQube
