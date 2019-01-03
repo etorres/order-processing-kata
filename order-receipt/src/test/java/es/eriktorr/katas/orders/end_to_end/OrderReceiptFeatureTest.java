@@ -1,8 +1,7 @@
-package es.eriktorr.katas.orders;
+package es.eriktorr.katas.orders.end_to_end;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
