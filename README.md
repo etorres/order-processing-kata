@@ -36,6 +36,8 @@ Please, use `docker-compose -f docker/docker-compose.yml up postgres adminer fly
 gradle order-receipt:regressionTest
 ```
 
+__Note:__ pass the `--rerun-tasks` parameter to the previous command to rerun end-2-end tests on demand.
+
 ### Build, test and report to SonarQube
 
 ```text

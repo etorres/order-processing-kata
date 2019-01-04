@@ -102,7 +102,10 @@ dependencies {
     testImplementation('org.apache.httpcomponents:httpclient') {
         because 'allows the execution of HTTP GET and POST requests'
     }
-    testImplementation('org.apache.httpcomponents:fluent-hc')
+    testImplementation('org.apache.httpcomponents:fluent-hc') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    testImplementation('org.slf4j:jcl-over-slf4j')
 }
 
 test {
