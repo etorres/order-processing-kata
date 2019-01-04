@@ -4,29 +4,41 @@ import cucumber.api.java.After;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.val;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class StepDefinition {
 
+    private static Pattern IS_GUID = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+
+    private String storeId;
     private String orderId;
 
     @When("the online store {storeId} sells a set of items at {localDateTime} with order reference {int}")
-    public void onlineStoreSubmitsOrder(String storeId, LocalDateTime createdAt, int orderReference) throws IOException {
-        val response = Request.Post("http://localhost:8080/stores/00-396-261/orders")
-                .bodyString("{\"reference\":\"7158\",\"createdAt\":\"2018-11-03T14:48:17.000000242\"}", ContentType.APPLICATION_JSON)
+    public void onlineStoreSubmitsOrder(String storeId, String createdAt, int orderReference) throws IOException {
+        val response = Request.Post(String.format("http://localhost:8080/stores/%s/orders", storeId))
+                .bodyString(String.format("{\"reference\":\"%s\",\"createdAt\":\"%s\"}", orderReference, createdAt), ContentType.APPLICATION_JSON)
                 .execute()
                 .returnResponse();
         val locationHeader = response.getFirstHeader("Location");
-        if (locationHeader != null) {
-            val lastSlashPosition = locationHeader.getValue().lastIndexOf("/");
-            orderId = locationHeader.getValue().substring(0, lastSlashPosition);
-        }
+        this.storeId = storeId;
+        this.orderId = orderIdFrom(locationHeader);
+    }
+
+    private String orderIdFrom(Header locationHeader) {
+        if (locationHeader == null) return null;
+        val lastSlashPosition = locationHeader.getValue().lastIndexOf("/");
+        val extractedOrderId = locationHeader.getValue().substring(lastSlashPosition + 1);
+        return IS_GUID.matcher(extractedOrderId).matches() ? extractedOrderId : null;
     }
 
     @Then("an order identifier is generated for the order")
@@ -36,33 +48,25 @@ public class StepDefinition {
 
     @Then("the order status is make available to the online store in a new endpoint generated from the order identifier")
     public void orderStatusInformationIsAvailable() {
-        System.err.println("\n\n >> WHEN 3\n");
+        await().atMost(10L, SECONDS).untilAsserted(() -> assertThat(
+                fetchOrderStatus(storeId, orderId).getStatusLine().getStatusCode()).isEqualTo(200L)
+        );
+    }
+
+    private HttpResponse fetchOrderStatus(String storeId, String orderId) throws IOException {
+        return Request.Get(String.format("http://localhost:8000/stores/%s/orders/%s", storeId, orderId))
+                .connectTimeout(1000)
+                .socketTimeout(1000)
+                .execute()
+                .returnResponse();
     }
 
     @After
     public void tearDown() throws Exception {
-        val databaseCleaner = new DatabaseCleaner();
-        databaseCleaner.cleanUp(orderId);
+        if (orderId != null) {
+            val databaseCleaner = new DatabaseCleaner();
+            databaseCleaner.cleanUp(orderId);
+        }
     }
-
-//    @When("^users upload data on a project$")
-//    public void usersUploadDataOnAProject() {
-//        System.err.println("\n\n >> WHEN 1\n");
-//    }
-//
-//    @When("^users want to get information on the (.+) project$")
-//    public void usersGetInformationOnAProject(String projectName) {
-//        System.err.println("\n\n >> WHEN 2\n");
-//    }
-//
-//    @Then("^the server should handle it and return a success status$")
-//    public void theServerShouldReturnASuccessStatus() {
-//        System.err.println("\n\n >> THEN 1\n");
-//    }
-//
-//    @Then("^the requested data is returned$")
-//    public void theRequestedDataIsReturned() {
-//        System.err.println("\n\n >> THEN 2\n");
-//    }
 
 }
